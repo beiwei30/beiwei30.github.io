@@ -1,15 +1,13 @@
 
 ---
-title: "Documentation"
-linkTitle: "Documentation"
+title: "文档"
+linkTitle: "文档"
 weight: 20
 menu:
   main:
     weight: 20
 ---
 
-{{% pageinfo %}}
-Welcome to the Dubbo documentation site!
-{{% /pageinfo %}}
+欢迎阅读 Dubbo 文档
 
 
