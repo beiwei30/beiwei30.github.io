@@ -1,26 +1,33 @@
 ---
 type: docs
-title: "Checklist"
-linkTitle: "Checklist"
+title: "检查列表"
+linkTitle: "检查列表"
 weight: 11
-description: "Checklist before release"
+description: "版本发布前的检查列表"
 ---
 
+## 发布前 checklist
 
-## Checklist before release
-
-* github milestones
-* github change lists
-* Travis CI
+* jira ticket 过一遍
+* svn change list
+* ticket 关联 code
 * test code
 * find bugs
 
-## Checklist for bigfix versions
+## 修复时 checklist
 
-* Create a _github issue_ before coding
-* Create _unit test_ before bugfix
-* Review
-* Test your code (Normal process / Abnormal process)
-* Record your design on _github issue_
-* Complete javadoc and comment in code
-* Manager for every version, responsible for scope and check
+* 修复代码前先建 ticket 
+* 修复代码前先写测试用例
+* 需要伙伴检查
+* test code(正常流程/异常流程)
+* 讲一遍逻辑
+* 契约文档化
+* 以上内容都写到ticket的评论上
+* 代码注释写清楚，用中文无妨
+* 每个版本要有 owner，确保 scope 和 check
+
+## Partner Check
+
+* Partner 以用户的方式运行一下功能
+* Partner 发现问题、添加测试（集成测试）直到不再复现；Owner 完成实现。（保证两方在Partner Check上的时间投入）
+* Owner 向 Partner 讲述一遍实现。

@@ -1,40 +1,39 @@
 ---
 type: docs
-title: "Filter Extension"
-linkTitle: "Filter"
+title: "调用拦截扩展"
+linkTitle: "调用拦截扩展"
 weight: 2
 ---
 
+## 扩展说明
 
-## Summary
+服务提供方和服务消费方调用过程拦截，Dubbo 本身的大多功能均基于此扩展点实现，每次远程方法执行，该拦截都会被执行，请注意对性能的影响。
 
-Extension for intercepting the invocation for both service provider and consumer, furthermore, most of functions in dubbo are implemented base on the same mechanism. Since every time when remote method is invoked, the filter extensions will be executed too, the corresponding penalty should be considered before more filters are added.
+约定：
 
-Contract:
+* 用户自定义 filter 默认在内置 filter 之后。
+* 特殊值 `default`，表示缺省扩展点插入的位置。比如：`filter="xxx,default,yyy"`，表示 `xxx` 在缺省 filter 之前，`yyy` 在缺省 filter 之后。
+* 特殊符号 `-`，表示剔除。比如：`filter="-foo1"`，剔除添加缺省扩展点 `foo1`。比如：`filter="-default"`，剔除添加所有缺省扩展点。
+* provider 和 service 同时配置的 filter 时，累加所有 filter，而不是覆盖。比如：`<dubbo:provider filter="xxx,yyy"/>` 和 `<dubbo:service filter="aaa,bbb" />`，则 `xxx`,`yyy`,`aaa`,`bbb` 均会生效。如果要覆盖，需配置：`<dubbo:service filter="-xxx,-yyy,aaa,bbb" />`
 
-* User defined filters are executed after built-in filters by default.
-* Special value `default` is introduced to represent the default extension location. For example: for `filter="xxx,default,yyy"`, `xxx` is before default filter, and `yyy` is after the default filter.
-* Special value `-` means delete. For example: `filter="-foo1"` excludes `foo1` extension. For example, `filter="-default"` exclues all default filters.
-* When provider and service have filter configured at the same moment, all filters are accumulated together instead of override, for example: for `<dubbo:provider filter="xxx,yyy"/>` and `<dubbo:service filter="aaa,bbb" />`，`xxx`, `yyy`, `aaa`, `bbb` are all count as filters. In order to change to override, use: `<dubbo:service filter="-xxx,-yyy,aaa,bbb" />` 
-
-## Extension Interface
+## 扩展接口
 
 `org.apache.dubbo.rpc.Filter`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
-<!-- filter for consumer -->
+<!-- 消费方调用过程拦截 -->
 <dubbo:reference filter="xxx,yyy" />
-<!-- default filter configuration for the consumer, will intercept for all references -->
+<!-- 消费方调用过程缺省拦截器，将拦截所有reference -->
 <dubbo:consumer filter="xxx,yyy"/>
-<!-- filter for provider -->
+<!-- 提供方调用过程拦截 -->
 <dubbo:service filter="xxx,yyy" />
-<!-- default filter configuration for the provider, will intercept for all services -->
+<!-- 提供方调用过程缺省拦截器，将拦截所有service -->
 <dubbo:provider filter="xxx,yyy"/>
 ```
 
-## Existing Extension
+## 已知扩展
 
 * `org.apache.dubbo.rpc.filter.EchoFilter`
 * `org.apache.dubbo.rpc.filter.GenericFilter`
@@ -50,9 +49,9 @@ Contract:
 * `org.apache.dubbo.rpc.filter.ExecuteLimitFilter`
 * `org.apache.dubbo.rpc.filter.DeprecatedFilter`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -60,11 +59,11 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxFilter.java (Filter implementation)
+                |-XxxFilter.java (实现Filter接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.rpc.Filter (plain text file with the content: xxx=com.xxx.XxxFilter)
+                |-org.apache.dubbo.rpc.Filter (纯文本文件，内容为：xxx=com.xxx.XxxFilter)
 ```
 
 XxxFilter.java：

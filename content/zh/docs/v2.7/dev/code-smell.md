@@ -1,126 +1,124 @@
 ---
 type: docs
-title: "Bad Smell"
-linkTitle: "Bad Smell"
+title: "坏味道"
+linkTitle: "坏味道"
 weight: 12
-description: "Bade code small which should be avoided"
+description: "这里记录的是 Dubbo 设计或实现不优雅的地方"
 ---
 
-Ugly Dubbo design or implementation will be record here.
+## URL 转换
 
-## URL Convertion
+### 1. 点对点暴露和引用服务
 
-### 1. Point to Point Service export and refer
-
-service directly export：
+直接暴露服务：
 
 ```
 EXPORT(dubbo://provider-address/com.xxx.XxxService?version=1.0.0")
 ```
 
-service directly refer：
+点对点直连服务：
 
 ```
 REFER(dubbo://provider-address/com.xxx.XxxService?version=1.0.0)
 ```
 
-### 2. Export servie by registry
+### 2. 通过注册中心暴露服务
 
-export service to registry：
+向注册中心暴露服务：
 
 ```
 EXPORT(registry://registry-address/org.apache.dubbo.registry.RegistrySerevice?registry=dubbo&export=ENCODE(dubbo://provider-address/com.xxx.XxxService?version=1.0.0))
 ```
 
-accquire registry：
+获取注册中心：
 
 ```
 url.setProtocol(url.getParameter("registry", "dubbo"))
 GETREGISTRY(dubbo://registry-address/org.apache.dubbo.registry.RegistrySerevice)
 ```
 
-registry service address：
+注册服务地址：
 
 ```
 url.getParameterAndDecoded("export"))
 REGISTER(dubbo://provider-address/com.xxx.XxxService?version=1.0.0)
 ```
 
-### 3. Refer service from registry
+### 3. 通过注册中心引用服务
 
-refer service from registry：
+从注册中心订阅服务：
 
 ```
 REFER(registry://registry-address/org.apache.dubbo.registry.RegistrySerevice?registry=dubbo&refer=ENCODE(version=1.0.0))
 ```
 
-accquire registry：
+获取注册中心：
 
 ```
 url.setProtocol(url.getParameter("registry", "dubbo"))
 GETREGISTRY(dubbo://registry-address/org.apache.dubbo.registry.RegistrySerevice)
 ```
 
-subscribe service address：
+订阅服务地址：
 
 ```
 url.addParameters(url.getParameterAndDecoded("refer"))
 SUBSCRIBE(dubbo://registry-address/com.xxx.XxxService?version=1.0.0)
 ```
 
-notify service address：
+通知服务地址：
 
 ```
 url.addParameters(url.getParameterAndDecoded("refer"))
 NOTIFY(dubbo://provider-address/com.xxx.XxxService?version=1.0.0)
 ```
 
-### 4. Registry push route rule
+### 4. 注册中心推送路由规则
 
-registry push route rule：
+注册中心路由规则推送：
 
 ```
 NOTIFY(route://registry-address/com.xxx.XxxService?router=script&type=js&rule=ENCODE(function{...}))
 ```
 
-accquire routers：
+获取路由器：
 
 ```
 url.setProtocol(url.getParameter("router", "script"))
 GETROUTE(script://registry-address/com.xxx.XxxService?type=js&rule=ENCODE(function{...}))
 ```
 
-### 5. Load route rule from file
+### 5. 从文件加载路由规则
 
-load route rule from file：
+从文件加载路由规则：
 
 ```
 GETROUTE(file://path/file.js?router=script)
 ```
 
-accquire routers：
+获取路由器：
 
 ```
 url.setProtocol(url.getParameter("router", "script")).addParameter("type", SUFFIX(file)).addParameter("rule", READ(file))
 GETROUTE(script://path/file.js?type=js&rule=ENCODE(function{...}))
 ```
 
-## Invoke parameters
+## 调用参数
 
-* path      service path
-* group    service group
-* version  service version
-* dubbo   current dubbo release version
-* token    verify token
-* timeout   invocation timeout
+* path 服务路径
+* group 服务分组
+* version 服务版本
+* dubbo 使用的 dubbo 版本
+* token 验证令牌
+* timeout 调用超时
 
-## SPI Loading
+## 扩展点的加载
 
-### 1. SPI Auto Adaptive
+### 1. 自适应扩展点
 
-When ExtensionLoader loads SPI, It will check spi attributes(using set method) . If one attribute is SPI, ExtensionLoader  will load the SPI implementation. Auto injected object is an adaptive instance（proxy） ,because the real implementation is confirmed only in execution stage.。when adaptive spi is invoked, Dubbo will choose the real implementation and executes it. Dubbo choose the right implementation according to the parameters that the mehod defines.
+ExtensionLoader 加载扩展点时，会检查扩展点的属性（通过set方法判断），如该属性是扩展点类型，则会注入扩展点对象。因为注入时不能确定使用哪个扩展点（在使用时确定），所以注入的是一个自适应扩展（一个代理）。自适应扩展点调用时，选取一个真正的扩展点，并代理到其上完成调用。Dubbo 是根据调用方法参数（上面有调用哪个扩展点的信息）来选取一个真正的扩展点。
 
-All the inner SPIs that  Dubbo defines have the URL  parameter defined for the method invocation. Adaptive SPI uses URL to determine which implementation is needed. One specific Key and Value in the URL confirms the usage of the specific implementation, All these is done by adding `@Adaptive`  annotation.
+在 Dubbo 给定所有的扩展点上调用都有 URL 参数（整个扩展点网的上下文信息）。自适应扩展即是从 URL 确定要调用哪个扩展点实现。URL 哪个 Key 的 Value 用来确定使用哪个扩展点，这个信息通过的 `@Adaptive` 注解在方法上说明。
 
 ```java
 @Extension
@@ -130,82 +128,82 @@ public interface Car {
 }
 ```
 
-For the rules above，ExtensionLoader  will create a adaptive instance for each SPI injected.
+由于自适应扩展点的上面的约定，ExtensionLoader 会为扩展点自动生成自适应扩展点类(通过字节码)，并将其实例注入。
 
-ExtensionLoader generated adaptive classes  look like ：
+ExtensionLoader 生成的自适应扩展点类如下：
 
 ```java
-package <package name for SPI interface>;
+package <扩展点接口所在包>;
  
-public class <SPI interface name>$Adpative implements <SPI interface> {
-    public <contains @Adaptive annotation method>(<parameters>) {
-        if(parameters containing URL Type?) using URL parameter
-        else if(method returns URL) using the return URL
-        # <else throw exception,inject SPI fail！>
+public class <扩展点接口名>$Adpative implements <扩展点接口> {
+    public <有@Adaptive注解的接口方法>(<方法参数>) {
+        if(是否有URL类型方法参数?) 使用该URL参数
+        else if(是否有方法类型上有URL属性) 使用该URL属性
+        # <else 在加载扩展点生成自适应扩展点类时抛异常，即加载扩展点失败！>
          
-        if(URL accquired == null) {
+        if(获取的URL == null) {
             throw new IllegalArgumentException("url == null");
         }
  
-        According to the Key order from @Adaptive annotation，get the Value from the URL as the real SPI name
-        if no value is found then use the default SPI implementation。If no SPI point， throw new IllegalStateException("Fail to get extension");
+        根据@Adaptive注解上声明的Key的顺序，从URL获致Value，作为实际扩展点名。
+        如URL没有Value，则使用缺省扩展点实现。如没有扩展点， throw new IllegalStateException("Fail to get extension");
  
-        Invoke the method using the spi and return the result.
+        在扩展点实现调用该方法，并返回结果。
     }
  
-    public <method having annotation @Adaptive>(<parameters>) {
+    public <有@Adaptive注解的接口方法>(<方法参数>) {
         throw new UnsupportedOperationException("is not adaptive method!");
     }
 }
 ```
 
-`@Adaptive`  annotation usage：
+`@Adaptive` 注解使用如下：
 
-If no value is configed for those Keys in URL，default SPI implementation is used。For example ，String[] {"key1", "key2"}，firstly Dubbo will look up value for key1 and use it as SPI name;if key1 value is not founded then look up for key2，if value of key2 is also not found ,then use default spi implementation. If no default implementation is configed, then the method will throw IllegalStateException。if not configed , then default implement is lower case of the interface class full package name. For Extension interface `org.apache.dubbo.xxx.YyyInvokerWrapper` , default value is `new String[] {"yyy.invoker.wrapper"}`
+如果 URL 这些 Key 都没有 Value，使用缺省的扩展（在接口的 Default 中设定的值）。比如，String[] {"key1", "key2"}，表示先在 URL 上找 key1 的 Value 作为要 Adapt 成的 Extension 名；key1 没有 Value，则使用 key2 的 Value 作为要 Adapt 成的 Extension 名。 key2 没有 Value，使用缺省的扩展。如果没有设定缺省扩展，则方法调用会抛出 IllegalStateException。如果不设置则缺省使用 Extension 接口类名的点分隔小写字串。即对于 Extension 接口 `org.apache.dubbo.xxx.YyyInvokerWrapper` 的缺省值为 `new String[] {"yyy.invoker.wrapper"}`
 
-## Callback Function
+## Callback 功能
 
-### 1. Parameter Callback
+### 1. 参数回调
 
-main theory ： in the persistent connection for one consumer->provider，export a service in  Consumer side，provider  side can reversely call the instance in consumer side.
+主要原理: 在一个 consumer->provider 的长连接上，自动在 Consumer 端暴露一个服务（实现方法参数上声明的接口A），provider 端便可反向调用到 consumer 端的接口实例。
 
-Implement details：
+实现细节：
 
-* For exchanging interface instance in transmition, auto export and auto refer is implemented in DubboCodec . Need to seperate business logic and codec logic.
-* you will need to judge whether needing callback when getting exporter from invocation，if needed, get the callback instance id from the attachments. By using this method, consumer side can implement the callback interface with different implementations.
+* 为了在传输时能够对回调接口实例进行转换，自动暴露与自动引用目前在 DubboCodec 中实现。此处需要考虑将此逻辑与 codec 逻辑分离。
+* 在根据 invocation 信息获取 exporter 时，需要判断是否是回调，如果是回调，会从 attachments 中取得回调服务实例的 id，在获取 exporter，此处用于 consumer 端可以对同一个 callback 接口做不同的实现。
 
-### 2. Event Notification
+### 2. 事件通知
 
-main theory ： when Consumer  executing invoke method，judging if any configuration for  onreturn/onerror... put  the method for onreturn to the callback list of the async invocatioin.
+主要原理：Consumer 在 invoke 方法时，判断如果有配置 onreturn/onerror... 则将 onreturn 对应的参数值(实例方法)加入到异步调用的回调列表中。
 
-Implement details：parameters is passed using URL，but string-object is not supported for URL, so the method is stored in  staticMap，it needs to be optimized.
+实现细节：参数的传递采用 URL，但 URL 中没有支持 string-object，所以将实例方法存储在 staticMap 中，此处实现需要进行改造。
 
-## Lazy Connection
+## Lazy连接
 
-DubboProtocol  specific features, default disabled
+DubboProtocol 特有功能，默认关闭。
 
-When client creating proxy for server, do not establish TCP persistent connection at first, only init the connecton when data is needing transmision.
+当客户端与服务端创建代理时，暂不建立 tcp 长连接，当有数据请求时再做连接初始化。
 
-This feather will disable the connection retry policy , resend the data again(if connection is lost when sending data ,try to establish a new connection to send data)
+此项功能自动关闭连接重试功能，开启发送重试功能（即发送数据时如果连接已断开，尝试重新建立连接）
 
-## Share Connection
+## 共享连接
 
-DubboProtocol specific features, default enabled。
+DubboProtocol 特有功能，默认开启。
 
-JVM A export many services，JVM B  refer more than one services of A，Share Connection means those different services invocations between A and B uses the same TCP connection  to transmit data, reducing server connections.
+JVM A 暴露了多个服务，JVM B 引用了 A 中的多个服务，共享连接是说 A 与 B 多个服务调用是通过同一个 TCP 长连接进行数据传输，已达到减少服务端连接数的目的.
 
-Implement details：when using share connection for the same address，you need pay more attention to the invoker's destroy action.on one hand, you should close the connection when all the invokers refering the same address is destroyed, on another hand ,you should not close the connection when not all of the invokers are destroyed. In design implementation, we uses a strategy called reference count , we create a connection called Lazy connection for exceptions not affacting business when closing the connection just in case.
+实现细节：对于同一个地址由于使用了共享连接，那 invoker 的 destroy 就需要特别注意，一方面要满足对同一个地址 refer 的 invoker 全部 destroy 后，连接需要关闭，另一方面还需要注意如何避免部分 invoker destroy 时不能关闭连接。在实现中采用了引用计数的方案，但为了防范，在连接关闭时，重新建立了一个 Lazy connection (称为幽灵连接), 用于当出现异常场景时，避免影响业务逻辑的正常调用.
 
-## sticky policy
+## sticky 策略
 
-when existing many providers and configing the sticky policy，invocation will be sent to the same provider as last invocation. Sticky Policy opens the lazy attribute of connection, for avoiding open useless connectons.
+有多个服务提供者的情况下，配置了 sticky 后，在提供者可用的情况下，调用会继续发送到上一次的服务提供者。sticky 策略默认开启了连接的 lazy 选项, 用于避免开启无用的连接.
 
-## provider selecting logic
+## 服务提供者选择逻辑
 
-0. existing multi providers，firstly select by Loadbalance 。If the selected  provider is available ,then just doing the invocation
-1. If the selected provider is not available in stage 1, then choose from the remaining ,if available then doing the inovation
-2. If all providers are not available , rescan the list(not choosen invoker first),juding if any provider is available, if existing,doing the invocatiion.
-3. If no available provider in stage 3, then the next invoker of the invoker of stage 1 will be choosen(if not the last one),avoiding collision.
+0. 存在多个服务提供者的情况下，首先根据 Loadbalance 进行选择，如果选择的 provider 处于可用状态，则进行后续调用
+0. 如果第一步选择的服务提供者不可用，则从剩余服务提供者列表中继续选择，如果可用，进行后续调用
+0. 如果所有的服务提供者都不可用，重新遍历整个列表（优先从没有选过的列表中选择），判断是否有可用的服务提供者（选择过程中，不可用的服务提供者可能会恢复到可用状态），如果有，则进行后续调用
+0. 如果第三步没有选择出可用的服务提供者，会选第一步选出的 invoker 中的下一个（如果不是最后一个），避免碰撞。
 
 
 

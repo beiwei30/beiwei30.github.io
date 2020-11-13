@@ -1,10 +1,10 @@
 ---
 type: docs
-title: "Dubbo Design Principals"
-linkTitle: "Design Principals"
+title: "设计原则"
+linkTitle: "设计原则"
 weight: 5
-description: "Dubbo design principals collections"
+description: "Dubbo 设计原则系列文章"
 ---
 
-The design principles in this chapter are taken from a series of articles published by Liang Fei on javaeye.
+本章节的设计原则摘录自梁飞在 javaeye 上发表的系列文章。
 

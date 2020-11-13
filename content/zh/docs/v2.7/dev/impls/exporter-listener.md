@@ -1,34 +1,34 @@
 ---
 type: docs
-title: "ExporterListener Extension"
-linkTitle: "ExporterListener"
+title: "暴露监听扩展"
+linkTitle: "暴露监听扩展"
 weight: 4
 ---
 
-## Summary
+## 扩展说明
 
-Fire events when there's any service exported. 
+当有服务暴露时，触发该事件。
 
-## Extension Interface
+## 扩展接口
 
 `org.apache.dubbo.rpc.ExporterListener`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
-<!-- service exporter listener -->
+<!-- 暴露服务监听 -->
 <dubbo:service listener="xxx,yyy" />
-<!-- default exporter listener for service provider -->
+<!-- 暴露服务缺省监听器 -->
 <dubbo:provider listener="xxx,yyy" />
 ```
 
-## Existing Extension
+## 已知扩展
 
 `org.apache.dubbo.registry.directory.RegistryExporterListener`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -36,11 +36,11 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxExporterListener.java (ExporterListener implementation)
+                |-XxxExporterListener.java (实现ExporterListener接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.rpc.ExporterListener (plain text file with the content: xxx=com.xxx.XxxExporterListener)
+                |-org.apache.dubbo.rpc.ExporterListener (纯文本文件，内容为：xxx=com.xxx.XxxExporterListener)
 ```
 
 XxxExporterListener.java：

@@ -1,28 +1,27 @@
 ---
 type: docs
-title: "TelnetHandler Extension"
-linkTitle: "TelnetHandler"
+title: "Telnet 命令扩展"
+linkTitle: "Telnet 命令扩展"
 weight: 20
 ---
 
+## 扩展说明
 
-## Summary
+所有服务器均支持 telnet 访问，用于人工干预。
 
-Extension to telnet command. All server should support telnet access for operation convenience.
-
-## Extension Interface
+## 扩展接口
 
 `org.apache.dubbo.remoting.telnet.TelnetHandler`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
 <dubbo:protocol telnet="xxx,yyy" />
-<!-- default configuration, will take effect if telnet attribute is not specified in <dubbo:protocol> -->
+<!-- 缺省值设置，当<dubbo:protocol>没有配置telnet属性时，使用此配置 -->
 <dubbo:provider telnet="xxx,yyy" />
 ```
 
-## Existing Extension
+## 已知扩展
 
 * `org.apache.dubbo.remoting.telnet.support.ClearTelnetHandler`
 * `org.apache.dubbo.remoting.telnet.support.ExitTelnetHandler`
@@ -36,9 +35,9 @@ Extension to telnet command. All server should support telnet access for operati
 * `org.apache.dubbo.rpc.dubbo.telnet.CountTelnetHandler`
 * `org.apache.dubbo.rpc.dubbo.telnet.PortTelnetHandler`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -46,11 +45,11 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxTelnetHandler.java (TelnetHandler implementation)
+                |-XxxTelnetHandler.java (实现TelnetHandler接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.remoting.telnet.TelnetHandler (plain text file with the content: xxx=com.xxx.XxxTelnetHandler)
+                |-org.apache.dubbo.remoting.telnet.TelnetHandler (纯文本文件，内容为：xxx=com.xxx.XxxTelnetHandler)
 ```
 
 XxxTelnetHandler.java：
@@ -75,7 +74,7 @@ META-INF/dubbo/org.apache.dubbo.remoting.telnet.TelnetHandler：
 xxx=com.xxx.XxxTelnetHandler
 ```
 
-## How To Use
+## 用法
 
 ```sh
 telnet 127.0.0.1 20880

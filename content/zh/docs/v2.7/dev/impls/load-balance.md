@@ -1,35 +1,35 @@
 ---
 type: docs
-title: "LoadBalance Extension"
-linkTitle: "LoadBalance"
+title: "负载均衡扩展"
+linkTitle: "负载均衡扩展"
 weight: 7
 ---
 
-## Summary
+## 扩展说明
 
-Pick one from service providers and fire the invocation.
+从多个服务提供方中选择一个进行调用
 
-## Extension Interface
+## 扩展接口
 
 `org.apache.dubbo.rpc.cluster.LoadBalance`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
 <dubbo:protocol loadbalance="xxx" />
-<!-- default configuration, will take effect when loadbalance is not configured in <dubbo:protocol> -->
+<!-- 缺省值设置，当<dubbo:protocol>没有配置loadbalance时，使用此配置 -->
 <dubbo:provider loadbalance="xxx" />
 ```
 
-## Existing Extension
+## 已知扩展
 
 * `org.apache.dubbo.rpc.cluster.loadbalance.RandomLoadBalance`
 * `org.apache.dubbo.rpc.cluster.loadbalance.RoundRobinLoadBalance`
 * `org.apache.dubbo.rpc.cluster.loadbalance.LeastActiveLoadBalance`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -37,11 +37,11 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxLoadBalance.java (LoadBalance implementation)
+                |-XxxLoadBalance.java (实现LoadBalance接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.rpc.cluster.LoadBalance (plain text file with the content: xxx=com.xxx.XxxLoadBalance)
+                |-org.apache.dubbo.rpc.cluster.LoadBalance (纯文本文件，内容为：xxx=com.xxx.XxxLoadBalance)
 ```
 
 XxxLoadBalance.java：

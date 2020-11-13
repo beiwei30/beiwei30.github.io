@@ -1,40 +1,40 @@
 ---
 type: docs
-title: "Versions"
-linkTitle: "Versions"
+title: "版本管理"
+linkTitle: "版本管理"
 weight: 9
-description: "Dubbo versioning contract"
+description: "Dubbo 项目的版本管理"
 ---
 
-**New feature development** and **stability improvement** are equally important to product. But adding new features will affect stability, dubbo uses the following version development pattern to achieve a good balance.
+**新功能的开发** 和 **稳定性的提高** 对产品都很重要。但是添加新功能会影响稳定性，Dubbo 使用如下的版本开发模式来保障两者。
 
-## Two versions evolving at the same time
+## 2 个版本并行开发
 
-* BugFix Version：low version，e.g. `2.4.x`. This is called the GA version, which can be applied in production. We are supposed only to fix bugs in this version, and increase the third version number when release.
-* Feature Version：high version, e.g. `2.5.x`. We add new features to this version, so applications have opportunities try new features.
+* BugFix 版本：低版本，比如 `2.4.x`。是 GA 版本，线上使用的版本，只会 BugFix，升级第三位版本号。
+* 新功能版本：高版本，比如 `2.5.x`。加新功能的版本，会给对新功能有需求的应用试用。
 
-When features in `2.5.x` are proved stable enough, we will announce `2.5.x` as a beta release. 
+`2.5.x` 的新功能基本稳定后，进入 `2.5.x` 试用阶段。找足够多的应用试用 `2.5.x` 版本。
 
-When `2.5.x` proved stable after enough test on enough applications：
+在 `2.5.x` 够稳定后：
 
-* `2.5.x`, the GA Version, only do BugFix, the main version to be used. We can try to promote applications to upgrade to GA at the desired time.
-* `2.4.x`, no longer maintained. When bugs appear, applications have no choice but upgrade to the latest stable version- Sunset Clause
-* We create a new branch `2.6.0` based on `2.5.x` for new features.
+* `2.5.x` 成为 GA 版本，只 BugFix，推广使用此版本。如果版本可用，可以推进应用在期望的时间点内升级到 GA 版本。
+* `2.4.x` 不再开发，应用碰到 Bug 让直接升级。（这个称为“夕阳条款”）
+* 从 `2.5.x` 拉成分支 `2.6.0`，作为新功能开发版本。
 
-## Pros
+## 优势
 
-* GA Version are promised stable:
-    * only BugFix
-    * GA Version got enough tests before promotion
-* New features can respond quickly in Feature Version and allow applications to try that
-* Significantly reduces development and maintenance costs 
+* 保证 GA 版本是稳定的！因为：
+    * 只会作 BugFix
+    * 成为 GA 版本前有试用阶段
+* 新功能可以在高版本中快速响应，并让应用能试用新功能。
+* 不会版本过多，导致开发和维护成本剧增
 
-## The responsibilities of users
+## 用户要配合的职责
 
-Users should always keep in track with the GA Version, make sure all bugs were fixed.
+由于开发只会 BugFix GA 版本，所以用户需要积极跟进升级到 GA 版本，以 Fix 发现的问题。
 
-There is a fake proposition: regular upgrades bring more risks. Here's the reasons:
+定期升级版本给用户带来了不安。这是一个假命题，说明如下：
 
-* GA remains stable after a trial period.
-* Bugs find on GA will be fixed immediately.
-* Comparing with the on-need-upgrade (only upgrade when find a serious problem, and may span multiple versions), upgrade periodically can flat risk. Experienced a long cycle of large projects, students will have such an experience, the tripartite library version does not upgrade for a long time, the result of the problem had to upgrade to the new version (across multiple versions) a huge risk.
+* GA 经过一个试用阶段保持稳定。
+* GA 版本有 Bug 会火速 Fix
+* 相对出问题才升级到 GA 版本（可能跨了多个版本）定期升级平摊风险（类似小步快跑）。经历过周期长的大项目的同学会有这样的经历，三方库版本长时间不升级，结果出了问题不得不升级到新版本（跨了多个版本）风险巨大。

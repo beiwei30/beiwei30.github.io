@@ -1,10 +1,10 @@
 ---
 type: docs
-title: "Dubbo Developer Guide"
-linkTitle: "Developer"
+title: "Dubbo 开发指南"
+linkTitle: "开发指南"
 weight: 20
-description: "Developer guide"
+description: "Dubbo 开发者的指南"
 ---
 
-This book dives into the design principles of dubbo, mainly covers the following topics: extension, coding styles, version, build, etc.
+这篇文档的目标读者是对 dubbo 源码、设计有兴趣的，或者有意愿加入 dubbo 开发的人群。主要涵盖了 dubbo 的框架设计、扩展机制、编码规范、版本管理、构建等话题。
 

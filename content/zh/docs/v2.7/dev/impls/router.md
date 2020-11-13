@@ -1,27 +1,27 @@
 ---
 type: docs
-title: "Router Extension"
-linkTitle: "Router"
+title: "路由扩展"
+linkTitle: "路由扩展"
 weight: 6
 ---
 
-## Summary
+## 扩展说明
 
-Pick one from service providers and fire the invocation.
+从多个服务提供方中选择一个进行调用。
 
-## Extension Interface
+## 扩展接口
 
 * `org.apache.dubbo.rpc.cluster.RouterFactory`
 * `org.apache.dubbo.rpc.cluster.Router`
 
-## Existing Extension
+## 已知扩展
 
 * `org.apache.dubbo.rpc.cluster.router.ScriptRouterFactory`
 * `org.apache.dubbo.rpc.cluster.router.FileRouterFactory`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -29,11 +29,11 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxRouterFactory.java (RouterFactory implementation)
+                |-XxxRouterFactory.java (实现RouterFactory接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.rpc.cluster.RouterFactory (plain text file with the content: xxx=com.xxx.XxxRouterFactory)
+                |-org.apache.dubbo.rpc.cluster.RouterFactory (纯文本文件，内容为：xxx=com.xxx.XxxRouterFactory)
 
 ```
 

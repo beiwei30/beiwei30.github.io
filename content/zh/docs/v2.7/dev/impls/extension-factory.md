@@ -1,32 +1,32 @@
 ---
 type: docs
-title: "ExtensionFactory Extension"
-linkTitle: "ExtensionFactory"
+title: "扩展点加载扩展"
+linkTitle: "扩展点加载扩展"
 weight: 11
 ---
 
-## Summary
+## 扩展说明
 
-Factory to load dubbo extensions.
+扩展点本身的加载容器，可从不同容器加载扩展点。
 
-## Extension Interface
+## 扩展接口
 
 `org.apache.dubbo.common.extension.ExtensionFactory`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
 <dubbo:application compiler="jdk" />
 ```
 
-## Existing Extension
+## 已知扩展
 
 * `org.apache.dubbo.common.extension.factory.SpiExtensionFactory`
 * `org.apache.dubbo.config.spring.extension.SpringExtensionFactory`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -34,11 +34,11 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxExtensionFactory.java (ExtensionFactory implementation)
+                |-XxxExtensionFactory.java (实现ExtensionFactory接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.common.extension.ExtensionFactory (plain text file with the content: xxx=com.xxx.XxxExtensionFactory)
+                |-org.apache.dubbo.common.extension.ExtensionFactory (纯文本文件，内容为：xxx=com.xxx.XxxExtensionFactory)
 ```
 
 XxxExtensionFactory.java：

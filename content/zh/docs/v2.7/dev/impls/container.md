@@ -1,34 +1,33 @@
 ---
 type: docs
-title: "Container Extension"
-linkTitle: "Container"
+title: "容器扩展"
+linkTitle: "容器扩展"
 weight: 22
 ---
 
+## 扩展说明
 
-## Summary
+服务容器扩展，用于自定义加载内容。
 
-Service container extension, useful for loading custom contents.
-
-## Extension Interface
+## 扩展接口
 
 `org.apache.dubbo.container.Container`
 
-## Extension Configuration
+## 扩展配置
 
 ```sh
 java org.apache.dubbo.container.Main spring jetty log4j
 ```
 
-## Existing Extensions
+## 已知扩展
 
 * `org.apache.dubbo.container.spring.SpringContainer`
 * `org.apache.dubbo.container.spring.JettyContainer`
 * `org.apache.dubbo.container.spring.Log4jContainer`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -36,11 +35,11 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxContainer.java (Container implementation)
+                |-XxxContainer.java (实现Container接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.container.Container (plain text file with the content: xxx=com.xxx.XxxContainer)
+                |-org.apache.dubbo.container.Container (纯文本文件，内容为：xxx=com.xxx.XxxContainer)
 ```
 
 XxxContainer.java：

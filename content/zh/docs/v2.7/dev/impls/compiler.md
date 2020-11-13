@@ -1,30 +1,30 @@
 ---
 type: docs
-title: "Compiler Extension"
-linkTitle: "Compiler"
+title: "编译器扩展"
+linkTitle: "编译器扩展"
 weight: 13
 ---
 
-## Summary
+## 扩展说明
 
-Java compiler, used for byte code dynamic generation for RPC invocation.
+Java 代码编译器，用于动态生成字节码，加速调用。
 
-## Extension Interface
+## 扩展接口
 
 `org.apache.dubbo.common.compiler.Compiler`
 
-## Extension Configuration
+## 扩展配置
 
-No configuration required, the extension will be automatically discovered and loaded.
+自动加载
 
-## Existing Extensions
+## 已知扩展
 
 * `org.apache.dubbo.common.compiler.support.JdkCompiler`
 * `org.apache.dubbo.common.compiler.support.JavassistCompiler`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -32,11 +32,11 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxCompiler.java (Compiler implementation)
+                |-XxxCompiler.java (实现Compiler接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.common.compiler.Compiler (plain text file with the content: xxx=com.xxx.XxxCompiler)
+                |-org.apache.dubbo.common.compiler.Compiler (纯文本文件，内容为：xxx=com.xxx.XxxCompiler)
 ```
 
 XxxCompiler.java：

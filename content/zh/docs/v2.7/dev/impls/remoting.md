@@ -1,40 +1,40 @@
 ---
 type: docs
-title: "Transporter Extension"
-linkTitle: "Transporter"
+title: "网络传输扩展"
+linkTitle: "网络传输扩展"
 weight: 17
 ---
 
-## Summary
+## 扩展说明
 
-Transportation extension for communication between server and client.
+远程通讯的服务器及客户端传输实现。
 
-## Extension Interface
+## 扩展接口
 
 * `org.apache.dubbo.remoting.Transporter`
 * `org.apache.dubbo.remoting.Server`
 * `org.apache.dubbo.remoting.Client`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
-<!-- server and client use the same transporter -->
+<!-- 服务器和客户端使用相同的传输实现 -->
 <dubbo:protocol transporter="xxx" /> 
-<!-- server and client use the different transporter -->
+<!-- 服务器和客户端使用不同的传输实现 -->
 <dubbo:protocol server="xxx" client="xxx" /> 
-<!-- default configuration, will take effect when transport/server/client attribute is not set in <dubbo:protocol> -->
+<!-- 缺省值设置，当<dubbo:protocol>没有配置transporter/server/client属性时，使用此配置 -->
 <dubbo:provider transporter="xxx" server="xxx" client="xxx" />
 ```
 
-## Existing Extension
+## 已知扩展
 
 * `org.apache.dubbo.remoting.transport.transporter.netty.NettyTransporter`
 * `org.apache.dubbo.remoting.transport.transporter.mina.MinaTransporter`
 * `org.apache.dubbo.remoting.transport.transporter.grizzly.GrizzlyTransporter`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -42,13 +42,13 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxTransporter.java (Transporter implementation)
-                |-XxxServer.java (Server implementation)
-                |-XxxClient.java (Client implementation)
+                |-XxxTransporter.java (实现Transporter接口)
+                |-XxxServer.java (实现Server接口)
+                |-XxxClient.java (实现Client接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.remoting.Transporter (plain text file with the content: xxx=com.xxx.XxxTransporter)
+                |-org.apache.dubbo.remoting.Transporter (纯文本文件，内容为：xxx=com.xxx.XxxTransporter)
 ```
 
 XxxTransporter.java：

@@ -1,39 +1,38 @@
 ---
 type: docs
-title: "Cache Extension"
-linkTitle: "Cache"
+title: "缓存扩展"
+linkTitle: "缓存扩展"
 weight: 24
 ---
 
-## Summary
+## 扩展说明
 
-Cache the return value, use request parameter as the key.
+用请求参数作为 key，缓存返回结果。
 
-## Extension Interface
+## 扩展接口
 
 `org.apache.dubbo.cache.CacheFactory`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
 <dubbo:service cache="lru" />
-<!-- method level cache -->
+<!-- 方法级缓存 -->
 <dubbo:service><dubbo:method cache="lru" /></dubbo:service> 
 <!-- 缺省值设置，当<dubbo:service>没有配置cache属性时，使用此配置 -->
-<!-- default configuration, will take affect if cache attribute isn't configured in <dubbo:service> -->
 <dubbo:provider cache="xxx,yyy" /> 
 ```
 
-## Existing Extensions
+## 已知扩展
 
 * `org.apache.dubbo.cache.support.lru.LruCacheFactory`
 * `org.apache.dubbo.cache.support.threadlocal.ThreadLocalCacheFactory`
 * `org.apache.dubbo.cache.support.jcache.JCacheFactory`
 
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -41,11 +40,11 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxCacheFactory.java (CacheFactory implementation)
+                |-XxxCacheFactory.java (实现StatusChecker接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.cache.CacheFactory (plain text file with contents: xxx=com.xxx.XxxCacheFactory)
+                |-org.apache.dubbo.cache.CacheFactory (纯文本文件，内容为：xxx=com.xxx.XxxCacheFactory)
 ```
 
 XxxCacheFactory.java：

@@ -1,27 +1,27 @@
 ---
 type: docs
-title: "StatusChecker Extension"
-linkTitle: "StatusChecker"
+title: "状态检查扩展"
+linkTitle: "状态检查扩展"
 weight: 21
 ---
 
-## Summary
+## 扩展说明
 
-Extension to check status of resources service depends on. This status checker can be used in both telnet status command and status page.
+检查服务依赖各种资源的状态，此状态检查可同时用于 telnet 的 status 命令和 hosting 的 status 页面。
 
-## Extension Interface
+## 扩展接口
 
 `org.apache.dubbo.common.status.StatusChecker`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
 <dubbo:protocol status="xxx,yyy" />
-<!-- default configuration, will take effect if no status attribute is configured in <dubbo:protocol> -->
+<!-- 缺省值设置，当<dubbo:protocol>没有配置status属性时，使用此配置 -->
 <dubbo:provider status="xxx,yyy" />
 ```
 
-## Existing Extension
+## 已知扩展
 
 * `org.apache.dubbo.common.status.support.MemoryStatusChecker`
 * `org.apache.dubbo.common.status.support.LoadStatusChecker`
@@ -31,9 +31,9 @@ Extension to check status of resources service depends on. This status checker c
 * `org.apache.dubbo.rpc.config.spring.status.SpringStatusChecker`
 * `org.apache.dubbo.rpc.config.spring.status.DataSourceStatusChecker`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -41,11 +41,11 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxStatusChecker.java (StatusChecker implementation)
+                |-XxxStatusChecker.java (实现StatusChecker接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.common.status.StatusChecker (plain text file with the content: xxx=com.xxx.XxxStatusChecker)
+                |-org.apache.dubbo.common.status.StatusChecker (纯文本文件，内容为：xxx=com.xxx.XxxStatusChecker)
 ```
 
 XxxStatusChecker.java：

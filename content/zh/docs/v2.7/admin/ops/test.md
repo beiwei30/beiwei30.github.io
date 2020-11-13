@@ -1,8 +1,8 @@
 ---
 type: docs
-title: "Service Test"
-linkTitle: "Test"
+title: "服务测试"
+linkTitle: "服务测试"
 weight: 3
 ---
 
-please refer to this [blog](/blog/service-test)
+请参考这篇[博客](../../../../../blog/service-test)

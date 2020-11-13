@@ -1,9 +1,11 @@
 ---
 type: docs
-title: "Website Guide"
-linkTitle: "Website Guide"
+title: "网站向导"
+linkTitle: "网站向导"
 weight: 3
 ---
 
-1. The website repository of Apache Dubbo is https://github.com/apache/dubbo-website
-2. After building the website, it'll be published to dubbo.apache.org automatically, you can also trigger it manually via https://selfserve.apache.org (need to login with Apache account) 
+
+1. Apache Dubbo 的网站仓库是 https://github.com/apache/dubbo-website
+2. 网站构建完毕后，它会被自动发布到 dubbo.apache.org，您也可以通过 https://selfserve.apache.org 手动触发（需要使用 Apache 账号登陆）
+

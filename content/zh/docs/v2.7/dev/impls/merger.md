@@ -1,34 +1,34 @@
 ---
 type: docs
-title: "Merger Extension"
-linkTitle: "Merger"
+title: "合并结果扩展"
+linkTitle: "合并结果扩展"
 weight: 8
 ---
 
-## Summary
+## 扩展说明
 
-Merge strategy for return result aggregation in group.
+合并返回结果，用于分组聚合。
 
-## Extension Interface
+## 扩展接口
 
 `org.apache.dubbo.rpc.cluster.Merger`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
 <dubbo:method merger="xxx" />
 ```
 
-## Existing Extension
+## 已知扩展
 
 * `org.apache.dubbo.rpc.cluster.merger.ArrayMerger`
 * `org.apache.dubbo.rpc.cluster.merger.ListMerger`
 * `org.apache.dubbo.rpc.cluster.merger.SetMerger`
 * `org.apache.dubbo.rpc.cluster.merger.MapMerger`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -36,11 +36,11 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxMerger.java (Merger implementation)
+                |-XxxMerger.java (实现Merger接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.rpc.cluster.Merger (plain text file with the content: xxx=com.xxx.XxxMerger)
+                |-org.apache.dubbo.rpc.cluster.Merger (纯文本文件，内容为：xxx=com.xxx.XxxMerger)
 ```
 
 XxxMerger.java：

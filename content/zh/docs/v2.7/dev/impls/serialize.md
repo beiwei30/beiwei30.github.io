@@ -1,39 +1,39 @@
 ---
 type: docs
-title: "Serialization Extension"
-linkTitle: "Serialization"
+title: "序列化扩展"
+linkTitle: "序列化扩展"
 weight: 16
 ---
 
-## Summary
+## 扩展说明
 
-Extension to serializing java object into byte code stream for transporting on the network, and vise versa.
+将对象转成字节流，用于网络传输，以及将字节流转为对象，用于在收到字节流数据后还原成对象。
 
-## Extension Interface
+## 扩展接口
 
 * `org.apache.dubbo.common.serialize.Serialization`
 * `org.apache.dubbo.common.serialize.ObjectInput`
 * `org.apache.dubbo.common.serialize.ObjectOutput`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
-<!-- protocol serialization style -->
+<!-- 协议的序列化方式 -->
 <dubbo:protocol serialization="xxx" />
-<!-- default configuration, will take effect if serialization is not configured in <dubbo:protocol> -->
+<!-- 缺省值设置，当<dubbo:protocol>没有配置serialization时，使用此配置 -->
 <dubbo:provider serialization="xxx" />
 ```
 
-## Existing Extension
+## 已知扩展
 
 * `org.apache.dubbo.common.serialize.dubbo.DubboSerialization`
 * `org.apache.dubbo.common.serialize.hessian.Hessian2Serialization`
 * `org.apache.dubbo.common.serialize.java.JavaSerialization`
 * `org.apache.dubbo.common.serialize.java.CompactedJavaSerialization`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -41,13 +41,13 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxSerialization.java (Serialization implementation)
-                |-XxxObjectInput.java (ObjectInput implementation)
-                |-XxxObjectOutput.java (ObjectOutput implementation)
+                |-XxxSerialization.java (实现Serialization接口)
+                |-XxxObjectInput.java (实现ObjectInput接口)
+                |-XxxObjectOutput.java (实现ObjectOutput接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.common.serialize.Serialization (plain text file with the content: xxx=com.xxx.XxxSerialization)
+                |-org.apache.dubbo.common.serialize.Serialization (纯文本文件，内容为：xxx=com.xxx.XxxSerialization)
 ```
 
 XxxSerialization.java：

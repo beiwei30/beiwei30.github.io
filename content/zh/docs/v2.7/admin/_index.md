@@ -1,8 +1,8 @@
 ---
 type: docs
-title: "Admin Guide"
-linkTitle: "Admin"
+title: "运维管理指南"
+linkTitle: "运维管理指南"
 weight: 3
-description: "Guide for dubbo administrator"
+description: "Dubbo 管理员指南"
 ---
 

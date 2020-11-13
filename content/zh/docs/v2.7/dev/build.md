@@ -1,64 +1,63 @@
 ---
 type: docs
-title: "Source Code Build"
-linkTitle: "Build"
+title: "源码构建"
+linkTitle: "源码构建"
 weight: 1
-description: "Build dubbo from source code"
+description: "从源码开始构建 Dubbo"
 ---
 
+## 代码签出
 
-## Checkout
-
-checkout the lastest project source code with commands blow:
+通过以下的这个命令签出最新的项目源码 [^1]：
 
 ```sh
 git clone https://github.com/apache/dubbo.git dubbo
 ```
 
-## Branches
+## 分支
 
-We use `master` as the major branch for new feature development, and use other branches for maintenance. Tags for all versions can be checked via https://github.com/apache/dubbo/tags.
+我们使用 master 作为主干版本的开发，使用分支作为维护版本。可以通过 https://github.com/apache/dubbo/tags 来查看所有版本的标签。
 
-## Building
+## 构建
 
-Dubbo relies on [maven](http://maven.apache.org) as the building tool.
+Dubbo 使用 [maven](http://maven.apache.org) 作为构建工具。
 
-Requirements:
+要求
 
-* Java above 1.5 version
-* Maven version 2.2.1 or above    
+* Java 1.5 以上的版本
+* Maven 2.2.1 或者以上的版本   
 
-The following `MAVEN_OPTS`should be configured before building:
+构建之前需要配置以下的 `MAVEN_OPTS`
 
 ```sh    
 export MAVEN_OPTS=-Xmx1024m -XX:MaxPermSize=512m
-```
+``` 
 
-build with below command:
+使用以下命令做一次构建
 
 ```sh
 mvn clean install
 ```
 
-skip testing using below building command:
+可以通过以下的构建命令来跳过单元测试
 
 ```sh
 mvn install -Dmaven.test.skip
 ```
 
-## Building jar package of source code 
+## 构建源代码 jar 包
 
-build Dubbo source code jar package with below command.
+通过以下命令以构建 Dubbo 的源代码 jar 包
 
 ```sh
 mvn clean source:jar install -Dmaven.test.skip
 ```
-and modify the dubbo dependency in your sample project to the SANPSHOT version of the local repository, and then use remote debugger to debug dubbo.
 
+并且修改你的样例项目中的 dubbo 依赖为本地仓库的 SANPSHOT 版本，然后使用远程 debug 来调试 dubbo。
 
-## IDE support
+## IDE 支持
 
-use below command to generate IDE.
+使用以下命令来生成 IDE 的工程
 
 ### Intellij Idea
 
@@ -66,23 +65,23 @@ use below command to generate IDE.
 mvn idea:idea
 ```
 
-### Eclipse
+### eclipse
 
 ```sh
 mvn eclipse:eclipse
 ```
 
-Importing into eclipse
+在 eclipse 中导入
 
-Firstly, a maven repository needs to be configured in eclipse. Define `M2_REPO` and point it to the local maven repository by clicking `Preferences -> Java -> Build Path -> Classpath`.
+首先，需要在 eclipse 中配置 maven 仓库。通过 Preferences -> Java -> Build Path -> Classpath 定义 `M2_REPO` 的 classpath 变量指向本地的 maven 仓库。 [^2]
 
 
-Use the following maven command as well: 
+也可以通过以下的 maven 命令配置：
 
 ```sh
 mvn eclipse:configure-workspace -Declipse.workspace=/path/to/the/workspace/
 ```
 
-1. view the source code through https://github.com/apache/dubbo 
-2. path under UNIX is ${HOME}/.m2/repository, path under Windows is C:\Documents and Settings\<user>\.m2\repository
+[^1]: 也可以直接在 https://github.com/apache/dubbo 上浏览源代码
+[^2]: UNIX 下的路径是 ${HOME}/.m2/repository, Windows 下的路径是 C:\Documents and Settings\<user>\.m2\repository
 

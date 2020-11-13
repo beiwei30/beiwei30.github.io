@@ -1,37 +1,31 @@
----
-type: docs
-title: "PageHandler Extension"
-linkTitle: "PageHandler"
-weight: 23
----
+# 页面扩展
 
+## 扩展说明
 
-## Summary
+对等网络节点组网器。
 
-Extension for page handler
-
-## Extension Interface
+## 扩展接口
 
 `org.apache.dubbo.container.page.PageHandler`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
 <dubbo:protocol page="xxx,yyy" />
-<!-- default configuration, will take effect if page attribute is not set in <dubbo:protocol> -->
+<!-- 缺省值设置，当<dubbo:protocol>没有配置page属性时，使用此配置 -->
 <dubbo:provider page="xxx,yyy" />
 ```
 
-## Existing Extension
+## 已知扩展
 
 * `org.apache.dubbo.container.page.pages.HomePageHandler`
 * `org.apache.dubbo.container.page.pages.StatusPageHandler`
 * `org.apache.dubbo.container.page.pages.LogPageHandler`
 * `org.apache.dubbo.container.page.pages.SystemPageHandler`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -39,11 +33,11 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxPageHandler.java (PageHandler implementation)
+                |-XxxPageHandler.java (实现PageHandler接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.container.page.PageHandler (plain text file with the content: xxx=com.xxx.XxxPageHandler)
+                |-org.apache.dubbo.container.page.PageHandler (纯文本文件，内容为：xxx=com.xxx.XxxPageHandler)
 ```
 
 XxxPageHandler.java：

@@ -1,33 +1,33 @@
 ---
 type: docs
-title: "Validation Extension"
-linkTitle: "Validation"
+title: "验证扩展"
+linkTitle: "验证扩展"
 weight: 25
 ---
 
-## Summary
+## 扩展说明
 
-Extension for parameter validation.
+参数验证扩展点。
 
-## Extension Interface
+## 扩展接口
 
 `org.apache.dubbo.validation.Validation`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
 <dubbo:service validation="xxx,yyy" />
-<!-- default configuration, it will take effect when there's no validation attribute specified in <dubbo:service> -->
+<!-- 缺省值设置，当<dubbo:service>没有配置validation属性时，使用此配置 -->
 <dubbo:provider validation="xxx,yyy" />
 ```
 
-## Existing Extension
+## 已知扩展
 
 `org.apache.dubbo.validation.support.jvalidation.JValidation`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -35,11 +35,11 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxValidation.java (Validation implementation)
+                |-XxxValidation.java (实现Validation接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.validation.Validation (plain text file with the content: xxx=com.xxx.XxxValidation)
+                |-org.apache.dubbo.validation.Validation (纯文本文件，内容为：xxx=com.xxx.XxxValidation)
 ```
 
 XxxValidation.java：

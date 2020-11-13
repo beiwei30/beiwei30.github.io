@@ -1,9 +1,9 @@
 
 ---
 type: docs
-title: "Committer Guide"
-linkTitle: "Committer"
-description: "Guidelines for dubbo committer"
+title: "Committer 指南"
+linkTitle: "Committer 指南"
+description: "Dubbo Committer 指南"
 weight: 2
 ---
 

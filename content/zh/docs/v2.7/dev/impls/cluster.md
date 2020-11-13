@@ -1,28 +1,27 @@
 ---
 type: docs
-title: "Cluster Extension"
-linkTitle: "Cluster"
+title: "集群扩展"
+linkTitle: "集群扩展"
 weight: 5
 ---
 
+## 扩展说明
 
-## Summary
+当有多个服务提供方时，将多个服务提供方组织成一个集群，并伪装成一个提供方。
 
-Group service providers in a cluster, and treat them as one single provider.
-
-## Extension Interface
+## 扩展接口
 
 `org.apache.dubbo.rpc.cluster.Cluster`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
 <dubbo:protocol cluster="xxx" />
-<!-- default configuration, will take affect if cluster attribute is not configured in <dubbo:protocol>  -->
+<!-- 缺省值配置，如果<dubbo:protocol>没有配置cluster时，使用此配置 -->
 <dubbo:provider cluster="xxx" />
 ```
 
-## Existing Extensions
+## 已知扩展
 
 * `org.apache.dubbo.rpc.cluster.support.FailoverCluster`
 * `org.apache.dubbo.rpc.cluster.support.FailfastCluster`
@@ -31,9 +30,9 @@ Group service providers in a cluster, and treat them as one single provider.
 * `org.apache.dubbo.rpc.cluster.support.ForkingCluster`
 * `org.apache.dubbo.rpc.cluster.support.AvailableCluster`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -41,11 +40,11 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxCluster.java (Cluster implementation)
+                |-XxxCluster.java (实现Cluster接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.rpc.cluster.Cluster (plain text file with the content: xxx=com.xxx.XxxCluster)
+                |-org.apache.dubbo.rpc.cluster.Cluster (纯文本文件，内容为：xxx=com.xxx.XxxCluster)
 ```
 
 XxxCluster.java：

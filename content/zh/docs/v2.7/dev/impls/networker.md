@@ -1,34 +1,34 @@
 ---
 type: docs
-title: "Networker Extension"
-linkTitle: "Networker"
+title: "组网扩展"
+linkTitle: "组网扩展"
 weight: 19
 ---
 
-## Summary
+## 扩展说明
 
-Extension for peer to peer network grouping.
+对等网络节点组网器。
 
-## Extension Interface
+## 扩展接口
 
 `org.apache.dubbo.remoting.p2p.Networker`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
 <dubbo:protocol networker="xxx" />
-<!-- default configuration, it takes effect if networker attribute is not set in <dubbo:protocol> -->
+<!-- 缺省值设置，当<dubbo:protocol>没有配置networker属性时，使用此配置 -->
 <dubbo:provider networker="xxx" /> 
 ```
 
-## Existing Extension
+## 已知扩展
 
 * `org.apache.dubbo.remoting.p2p.support.MulticastNetworker`
 * `org.apache.dubbo.remoting.p2p.support.FileNetworker`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -36,11 +36,11 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxNetworker.java (Networker implementation)
+                |-XxxNetworker.java (实现Networker接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.remoting.p2p.Networker (plain text file with the content: xxx=com.xxx.XxxNetworker)
+                |-org.apache.dubbo.remoting.p2p.Networker (纯文本文件，内容为：xxx=com.xxx.XxxNetworker)
 ```
 
 XxxNetworker.java：

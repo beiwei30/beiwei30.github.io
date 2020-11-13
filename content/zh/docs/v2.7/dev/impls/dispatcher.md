@@ -1,27 +1,27 @@
 ---
 type: docs
-title: "Dispatcher Extension"
-linkTitle: "Dispatcher"
+title: "消息派发扩展"
+linkTitle: "消息派发扩展"
 weight: 14
 ---
 
-## Summary
+## 扩展说明
 
-Thread pool dispatch strategy.
+通道信息派发器，用于指定线程池模型。
 
-## Extension Interface
+## 扩展接口
 
 `org.apache.dubbo.remoting.Dispatcher`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
 <dubbo:protocol dispatcher="xxx" />
-<!-- default configuration, will take effect if dispatcher attribute is not set in <dubbo:protocol> -->
+<!-- 缺省值设置，当<dubbo:protocol>没有配置dispatcher属性时，使用此配置 -->
 <dubbo:provider dispatcher="xxx" />
 ```
 
-## Existing Extensions
+## 已知扩展
 
 * `org.apache.dubbo.remoting.transport.dispatcher.all.AllDispatcher`
 * `org.apache.dubbo.remoting.transport.dispatcher.direct.DirectDispatcher`
@@ -29,9 +29,9 @@ Thread pool dispatch strategy.
 * `org.apache.dubbo.remoting.transport.dispatcher.execution.ExecutionDispatcher`
 * `org.apache.dubbo.remoting.transport.dispatcher.connection.ConnectionOrderedDispatcher`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -39,11 +39,11 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxDispatcher.java (Dispatcher implementation)
+                |-XxxDispatcher.java (实现Dispatcher接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.remoting.Dispatcher (plain text file with the content: xxx=com.xxx.XxxDispatcher)
+                |-org.apache.dubbo.remoting.Dispatcher (纯文本文件，内容为：xxx=com.xxx.XxxDispatcher)
 ```
 
 XxxDispatcher.java：

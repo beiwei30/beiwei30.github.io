@@ -1,15 +1,15 @@
 ---
 type: docs
-title: "install Zookeeper Configuration Center"
-linkTitle: "Config Center"
+title: "Zookeeper 注册中心安装"
+linkTitle: "Zookeeper 注册中心安装"
 weight: 4
 ---
 
-zookeeper register center client version: `dubbo-2.3.3` and above[^1]
+建议使用 `dubbo-2.3.3` 以上版本的 zookeeper [^1] 注册中心客户端。
 
-Dubbo changes nothing of Zookeeper's server side, an original Zookeeper server is fine. All change happens while calling Zookeeper's client side
+Dubbo 未对 Zookeeper 服务器端做任何侵入修改，只需安装原生的 Zookeeper 服务器即可，所有注册中心逻辑适配都在调用 Zookeeper 客户端时完成。
 
-install:
+安装:
 
 ```sh
 wget http://archive.apache.org/dist/zookeeper/zookeeper-3.3.3/zookeeper-3.3.3.tar.gz
@@ -18,13 +18,13 @@ cd zookeeper-3.3.3
 cp conf/zoo_sample.cfg conf/zoo.cfg
 ```
 
-configuration:
+配置:
 
 ```sh
 vi conf/zoo.cfg
 ```
 
-If cluster is not needed, the content of `zoo.cfg` is as below [^2]: 
+如果不需要集群，`zoo.cfg` 的内容如下 [^2]：
 
 ```properties
 tickTime=2000
@@ -34,7 +34,7 @@ dataDir=/home/dubbo/zookeeper-3.3.3/data
 clientPort=2181
 ```
 
-If cluster is needed, the content of `zoo.cfg` is as below [^3]: 
+如果需要集群，`zoo.cfg` 的内容如下 [^3]：
 
 ```properties
 tickTime=2000
@@ -46,58 +46,58 @@ server.1=10.20.153.10:2555:3555
 server.2=10.20.153.11:2555:3555
 ```
 
-Put myid file in data directory [^4]:
+并在 data 目录 [^4] 下放置 myid 文件：
 
 ```sh
 mkdir data
 vi myid
 ```
 
-Myid is the number after `server` in `zoo.cfg`. The first one's content is 1, the second one's content is 2:
+myid 指明自己的 id，对应上面 `zoo.cfg` 中 `server.` 后的数字，第一台的内容为 1，第二台的内容为 2，内容如下：
 
 ```
 1
 ```
 
-Start:
+启动:
 
 ```sh
 ./bin/zkServer.sh start
 ```
 
-Stop:
+停止:
 
 ```sh
 ./bin/zkServer.sh stop
 ```
 
-Command line [^5]: 
+命令行 [^5]: 
 
 ```sh
 telnet 127.0.0.1 2181
 dump
 ```
 
-Or:
+或者:
 
 ```shell
 echo dump | nc 127.0.0.1 2181
 ```
 
-Usage:
+用法:
 
 ```xml
 dubbo.registry.address=zookeeper://10.20.153.10:2181?backup=10.20.153.11:2181
 ```
 
-Or:
+或者:
 
 ```xml
 <dubbo:registry protocol="zookeeper" address="10.20.153.10:2181,10.20.153.11:2181" />
 ```
 
-[^1]: Zookeeper is a sub project of Apache Hadoop.As it is robust, we recommend to use in production environment.
-[^2]: Data directory should be changed into your real output directory
-[^3]: Data directory and server address should be changed into your real machine information
-[^4]: `dataDir` in `zoo.cfg`
+[^1]: Zookeeper是 Apache Hadoop 的子项目，强度相对较好，建议生产环境使用该注册中心
+[^2]: 其中 data 目录需改成你真实输出目录
+[^3]: 其中 data 目录和 server 地址需改成你真实部署机器的信息
+[^4]: 上面 `zoo.cfg` 中的 `dataDir`
 [^5]: http://zookeeper.apache.org/doc/r3.3.3/zookeeperAdmin.html

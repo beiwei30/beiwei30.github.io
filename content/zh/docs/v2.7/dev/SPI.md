@@ -1,37 +1,36 @@
 ---
 type: docs
-title: "SPI Loading"
-linkTitle: "SPI"
+title: "扩展点加载"
+linkTitle: "扩展点加载"
 weight: 3
-description: "How Dubbo SPI works"
+description: "Dubbo 中的扩展点加载机制"
 ---
 
+## 扩展点配置
 
-## SPI Config
+### 来源：
 
-### Source:
+Dubbo 的扩展点加载从 JDK 标准的 SPI (Service Provider Interface) 扩展点发现机制加强而来。
 
-Dubbo SPI is inherited from standard JDK SPI(Service Provider Interface) and makes it more powerful.
+Dubbo 改进了 JDK 标准的 SPI 的以下问题：
 
-Dubbo fixed below issues of the standard JDK SPI:
+* JDK 标准的 SPI 会一次性实例化扩展点所有实现，如果有扩展实现初始化很耗时，但如果没用上也加载，会很浪费资源。
+* 如果扩展点加载失败，连扩展点的名称都拿不到了。比如：JDK 标准的 ScriptEngine，通过 `getName()` 获取脚本类型的名称，但如果 RubyScriptEngine 因为所依赖的 jruby.jar 不存在，导致 RubyScriptEngine 类加载失败，这个失败原因被吃掉了，和 ruby 对应不起来，当用户执行 ruby  脚本时，会报不支持 ruby，而不是真正失败的原因。
+* 增加了对扩展点 IoC 和 AOP 的支持，一个扩展点可以直接 setter 注入其它扩展点。
 
-* The standard JDK SPI will load and instantize all the implementations at once. It will be a waste of resources if one implementation is timecosted, but never be used.
-* We can't accquire the SPI name, if loading the SPI implementation is failed.For example: standard JDK ScriptEngine, get script type by invoking method getName(). RubyScriptEngine class will load failed if the depenency jar jruby.jar is missing, and the real error info will be lost. When user executes ruby scripts, the program throws exception that doesn't support ruby, but it is not the real cause.
-* Enhance the SPI functionality by supporting IoC and AOP, one SPI can be easily injected by another SPI simply using setter.
+### 约定：
 
-### Appointment:
+在扩展类的 jar 包内 [^1]，放置扩展点配置文件 `META-INF/dubbo/接口全限定名`，内容为：`配置名=扩展实现类全限定名`，多个实现类用换行符分隔。
 
-In the jar file containing extension class [^1], places a config file `META-INF/dubbo/full interface name`, file content pattern: `SPI name=the fully qualified name for the extension class`, use new line seperator for multiple implementation.
+### 示例：
 
-### Example:
-
-To extend Dubbo Protocol, place a text file in the extension jar file: `META-INF/dubbo/org.apache.dubbo.rpc.Protocol`, content:
+以扩展 Dubbo 的协议为例，在协议的实现 jar 包内放置文本文件：`META-INF/dubbo/org.apache.dubbo.rpc.Protocol`，内容为：
 
 ```properties
 xxx=com.alibaba.xxx.XxxProtocol
 ```
 
-content of the implementation [^2]:
+实现类内容 [^2]：
 
 ```java
 package com.alibaba.xxx;
@@ -43,21 +42,21 @@ public class XxxProtocol implements Protocol {
 }
 ```
 
-### Configuration in config module
+### 配置模块中的配置
 
-In Dubbo config module, all SPI points have related attributes or labels, we can choose the specific SPI implementation by using its name. Like:
+Dubbo 配置模块中，扩展点均有对应配置属性或标签，通过配置指定使用哪个扩展实现。比如：
 
 ```xml
 <dubbo:protocol name="xxx" />
 ```
 
-## SPI Features
+## 扩展点特性
 
-### SPI Auto Wrap
+### 扩展点自动包装
 
-Auto wrap the SPI's Wrapper class. `ExtensionLoader` loads the SPI implementation, if the SPI has a copy instructor, it will be regarded as the SPI's Wrapper class.
+自动包装扩展点的 Wrapper 类。`ExtensionLoader` 在加载扩展点时，如果加载到的扩展点有拷贝构造函数，则判定为扩展点 Wrapper 类。
 
-Wrapper class content:
+Wrapper类内容：
 
 ```java
 package com.alibaba.xxx;
@@ -69,30 +68,30 @@ public class XxxProtocolWrapper implements Protocol {
  
     public XxxProtocolWrapper(Protocol protocol) { impl = protocol; }
  
-    //after interface method is executed, the method in extension will be executed
+    // 接口方法做一个操作后，再调用extension的方法
     public void refer() {
-        //... some operation
+        //... 一些操作
         impl.refer();
-        // ... some operation
+        // ... 一些操作
     }
  
     // ...
 }
 ```
 
-Wrapper class also implements the same SPI interface, but Wrapper is not the real implementation. It is used for wrap the real implementation returned from the `ExtensionLoader`. The real returned instance by `ExtensionLoader` is the Wrapper class instance, Wrapper holder the real SPI implementation class.
+Wrapper 类同样实现了扩展点接口，但是 Wrapper 不是扩展点的真正实现。它的用途主要是用于从 `ExtensionLoader` 返回扩展点时，包装在真正的扩展点实现外。即从 `ExtensionLoader` 中返回的实际上是 Wrapper 类的实例，Wrapper 持有了实际的扩展点实现类。
 
-There can be many Wrapper for one spi, simply add one if you need.
+扩展点的 Wrapper 类可以有多个，也可以根据需要新增。
 
-With Wrapper class, you will be able to move same logics into Wrapper for all SPIs. Newly added Wrapper class add external logics for all SPIs, looks like AOP, Wrapper acts as a proxy for SPI.
+通过 Wrapper 类可以把所有扩展点公共逻辑移至 Wrapper 中。新加的 Wrapper 在所有的扩展点上添加了逻辑，有些类似 AOP，即 Wrapper 代理了扩展点。
 
-### SPI Auto Load
+### 扩展点自动装配
 
-when loading the SPI, Dubbo will auto load the depency SPI. When one SPI implementation contains attribute which is also an SPI of another type,`ExtensionLoader` will automatically load the depency SPI. `ExtensionLoader` knows all the members of the specific SPI by scanning the setter method of all implementation class.
+加载扩展点时，自动注入依赖的扩展点。加载扩展点时，扩展点实现类的成员如果为其它扩展点类型，`ExtensionLoader` 在会自动注入依赖的扩展点。`ExtensionLoader` 通过扫描扩展点实现类的所有 setter 方法来判定其成员。即 `ExtensionLoader` 会执行扩展点的拼装操作。
 
-Demo: two SPI `CarMaker`（car maker）、`WheelMaker` (wheel maker)
+示例：有两个为扩展点 `CarMaker`（造车者）、`WheelMaker` (造轮者)
 
-Intefaces look like:
+接口类如下：
 
 ```java
 public interface CarMaker {
@@ -104,7 +103,7 @@ public interface WheelMaker {
 }
 ```
 
-`CarMaker`'s implementation:
+`CarMaker` 的一个实现类：
 
 ```java
 public class RaceCarMaker implements CarMaker {
@@ -123,25 +122,25 @@ public class RaceCarMaker implements CarMaker {
 }
 ```
 
-when `ExtensionLoader` loads `CarMaker`'s implementation `RaceCarMaker`, the method `setWheelMaker` needs paramType `WheelMaker` which is also a SPI, It will be automatically loaded.
+`ExtensionLoader` 加载 `CarMaker` 的扩展点实现 `RaceCarMaker` 时，`setWheelMaker` 方法的 `WheelMaker` 也是扩展点则会注入 `WheelMaker` 的实现。
 
-This brings a new question:How `ExtensionLoader` determines which implementation to use when load the injected SPI. As for this demo, when existing multi `WheelMaker` implementation, which one should the `ExtensionLoader` chooses.
+这里带来另一个问题，`ExtensionLoader` 要注入依赖扩展点时，如何决定要注入依赖扩展点的哪个实现。在这个示例中，即是在多个`WheelMaker` 的实现中要注入哪个。
 
-Good question, we will explain it in the following chapter: SPI Auto Adaptive.
+这个问题在下面一点 [扩展点自适应](#扩展点自适应) 中说明。
 
-### SPI Auto Adaptive
+### 扩展点自适应
 
-The depency SPI that `ExtensionLoader` injects is an instance of `Adaptive`, the real spi implementation is known until the adaptive instance is executed.
+`ExtensionLoader` 注入的依赖扩展点是一个 `Adaptive` 实例，直到扩展点方法执行时才决定调用是哪一个扩展点实现。
 
-Dubbo use URL (containing Key-Value) to pass the configuration.
+Dubbo 使用 URL 对象（包含了Key-Value）传递配置信息。
 
-The SPI method invocation has the URL parameter（Or Entity that has URL attribute）
+扩展点方法调用会有URL参数（或是参数有URL成员）
 
-In this way depended SPI can get configuration from URL, after config all SPI key needed, configuration information will be passed from outer by URL. URL acts as a bus when passing the config information.
+这样依赖的扩展点也可以从URL拿到配置信息，所有的扩展点自己定好配置的Key后，配置信息从URL上从最外层传入。URL在配置传递上即是一条总线。
 
-Demo: two SPI `CarMaker`、`WheelMaker`
+示例：有两个为扩展点 `CarMaker`、`WheelMaker`
 
-interface looks like:
+接口类如下：
 
 ```java
 public interface CarMaker {
@@ -153,7 +152,7 @@ public interface WheelMaker {
 }
 ```
 
-`CarMaker`'s implementation:
+`CarMaker` 的一个实现类：
 
 ```java
 public class RaceCarMaker implements CarMaker {
@@ -172,7 +171,7 @@ public class RaceCarMaker implements CarMaker {
 }
 ```
 
-when execute the code above
+当上面执行
 
 ```java
 // ...
@@ -180,11 +179,11 @@ Wheel wheel = wheelMaker.makeWheel(url);
 // ...
 ```
 
-, the injected `Adaptive` object determine which `WheelMaker`'s `makeWheel` method will be executed by predefined Key. Such as `wheel.type`, key `url.get("wheel.type")` will determine `WheelMake` implementation. The logic of`Adaptive` instance of fixed, getting the predefined Key of the URL, dynamically creating the real implementation and execute it.
+时，注入的 `Adaptive` 实例可以提取约定 Key 来决定使用哪个 `WheelMaker` 实现来调用对应实现的真正的 `makeWheel` 方法。如提取 `wheel.type`, key 即 `url.get("wheel.type")` 来决定 `WheelMake` 实现。`Adaptive` 实例的逻辑是固定，指定提取的 URL 的 Key，即可以代理真正的实现类上，可以动态生成。
 
-For Dubbo, the SPI `Adaptive` implementation in `ExtensionLoader` is dynamically created when dubbo is loading the SPI. Get the Key from URL, the Key will be provided through `@Adaptive` annotation for the interface method definition.
+在 Dubbo 的 `ExtensionLoader` 的扩展点类对应的 `Adaptive` 实现是在加载扩展点里动态生成。指定提取的 URL 的 Key 通过 `@Adaptive` 注解在接口方法上提供。
 
-Below is Dubbo Transporter SPI codes:
+下面是 Dubbo 的 Transporter 扩展点的代码：
 
 ```java
 public interface Transporter {
@@ -196,49 +195,49 @@ public interface Transporter {
 }
 ```
 
-for the method bind(), Adaptive will firstly search `server` key, if no Key were founded then will search `transport` key, to determine the implementation that the proxy represent for.
+对于 bind() 方法，Adaptive 实现先查找 `server` key，如果该 Key 没有值则找 `transport` key 值，来决定代理到哪个实际扩展点。
 
 
-### SPI Auto Activation
+### 扩展点自动激活
 
-As for Collections SPI, such as: `Filter`, `InvokerListener`, `ExportListener`, `TelnetHandler`, `StatusChecker` etc, multi implementations can be loaded at one time. User can simplify configuration by using auto activation, Like:
-
-```java
-import org.apache.dubbo.common.extension.Activate;
-import org.apache.dubbo.rpc.Filter;
- 
-@Activate // Active for any condition
-public class XxxFilter implements Filter {
-    // ...
-}
-```
-
-Or:
+对于集合类扩展点，比如：`Filter`, `InvokerListener`, `ExportListener`, `TelnetHandler`, `StatusChecker` 等，可以同时加载多个实现，此时，可以用自动激活来简化配置，如：
 
 ```java
 import org.apache.dubbo.common.extension.Activate;
 import org.apache.dubbo.rpc.Filter;
  
-@Activate("xxx") // when configed xxx parameter and the parameter has a valid value,the SPI is activated, for example configed cache="lru", auto acitivate CacheFilter.
+@Activate // 无条件自动激活
 public class XxxFilter implements Filter {
     // ...
 }
 ```
 
-Or:
+或：
 
 ```java
 import org.apache.dubbo.common.extension.Activate;
 import org.apache.dubbo.rpc.Filter;
  
-@Activate(group = "provider", value = "xxx") // only activate for provider, group can be "provider" or "consumer"
+@Activate("xxx") // 当配置了xxx参数，并且参数为有效值时激活，比如配了cache="lru"，自动激活CacheFilter。
+public class XxxFilter implements Filter {
+    // ...
+}
+```
+
+或：
+
+```java
+import org.apache.dubbo.common.extension.Activate;
+import org.apache.dubbo.rpc.Filter;
+ 
+@Activate(group = "provider", value = "xxx") // 只对提供方激活，group可选"provider"或"consumer"
 public class XxxFilter implements Filter {
     // ...
 }
 ```
 
 
-[^1]: Note: The config file here is in you own jar file, not in dubbo release jar file, Dubbo will scan all jar files with the same filename in classpath and then merge them together
-[^2]: Note: SPI will be loaded in singleton pattern(Please ensure thread safety), cached in `ExtensionLoader` 
+[^1]: 注意：这里的配置文件是放在你自己的 jar 包内，不是 dubbo 本身的 jar 包内，Dubbo 会全 ClassPath 扫描所有 jar 包内同名的这个文件，然后进行合并
+[^2]: 注意：扩展点使用单一实例加载（请确保扩展实现的线程安全性），缓存在 `ExtensionLoader` 中
 
 

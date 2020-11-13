@@ -1,21 +1,20 @@
 ---
 type: docs
-title: "Compatibility Test"
+title: "技术兼容性测试"
 linkTitle: "TCK"
 weight: 13
-description: "Dubbo compatibility test"
+description: "Dubbo 项目的技术兼容性测试"
 ---
 
+Dubbo 的协议，通讯，序列化，注册中心，负载均策等扩展点，都有多种可选策略，以应对不同应用场景，而我们的测试用例很分散，当用户自己需要加一种新的实现时，总是不确定能否满足扩展点的完整契约。
 
-Dubbo's protocol, communication, serialization, registry, load balancing and other SPI all offer alternative strategies for different application scenarios while our test cases are very scattered. Ours is always uncertain whether it can satisfy the complete contract of the extension point when users need to add a new implementation.     
+所以，我们需要对核心扩展点写 [TCK](http://en.wikipedia.org/wiki/Technology_Compatibility_Kit) (Technology Compatibility Kit)，用户增加一种扩展实现，只需通过 TCK，即可确保与框架的其它部分兼容运行，可以有效提高整体健壮性，也方便第三方扩展者接入，加速开源社区的成熟。
 
-Thus we need to use TCK (Technology Compatibility Kit) for the core extension points.  When users add a new implementaion, compatibility with the rest of the framework can be ensured with TCK. This can effectively improve the overall health and also facilitate the access of the third party extenders, which accelerates the maturity of the open source community.
+开源社区的行知同学已着手研究这一块，他的初步想法是借鉴 JBoss 的 CDI-TCK，做一个 Dubbo 的 TCK 基础框架，在此之上实现 Dubbo 的扩展点 TCK 用例。
 
-Xingzhi from the open source community is already working on this part. His preliminary idea is to build a TCK framework for Dubbo drawing on the CDI-TCK of JBoss first, then realize the TCK implementing case of Dubbo. 
+参见：http://docs.jboss.org/cdi/tck/reference/1.0.1-Final/html/introduction.html
 
-Reference：http://docs.jboss.org/cdi/tck/reference/1.0.1-Final/html/introduction.html
-
-Anyone interested  is welcomed to work on this together. 
+如果大家有兴趣，也可以一起研究，和行知一块讨论。
 
 #### Protocol TCK
 

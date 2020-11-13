@@ -1,9 +1,9 @@
 
 ---
 type: docs
-title: "Contributor Guide"
-linkTitle: "Contributor"
-description: "Guidelines for dubbo contributor"
+title: "Contributor 指南"
+linkTitle: "Contributor 指南"
+description: "Dubbo Contributor 指南"
 weight: 1
 ---
 

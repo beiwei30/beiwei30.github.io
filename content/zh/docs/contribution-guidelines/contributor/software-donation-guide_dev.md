@@ -1,26 +1,26 @@
 ---
 type: docs
-title: "Software Donation Guide"
-linkTitle: "Donation"
+title: "软件捐献向导"
+linkTitle: "捐献向导"
 weight: 4
 ---
 
-Before you go through this guide, make sure you have confirmed with PMC that a SGA is actually needed.
+在您阅读这篇指南之前，请确保您已经向PMC确认了实际需要的 SGA。
 
-If you are donating significant amount of code or documentation to Apache Dubbo , you will be required to sign a [Software Grant](https://www.apache.org/licenses/#grants) before your code/doc could be merged.
+如果您向 Apache Dubbo 捐赠了大量的代码或文档，则需要在合并代码或者文档之前签署[软件授权书](https://www.apache.org/licenses/#grants)。
 
-#### Steps
+### 操作步骤
 
-1. Download this [pdf](https://www.apache.org/licenses/software-grant-template.pdf)
-2. Print it out
-3. Fill in the blanks (see below as an example)
-4. Request your boss to sign it
-5. Scan it
-6. Send an email to secretary@apache.org and cc private@dubbo.apache.org
+1. 下载这篇[pdf文档](https://www.apache.org/licenses/software-grant-template.pdf)
+2. 打印下载好的文档
+3. 按要求填充表格（请看下边示例）
+4. 请您的领导在上边签字
+5. 扫描
+6. 将扫描好的文档以邮件的方式发送给secretary@apache.org，并抄送给private@dubbo.apache.org
 
-#### Example:
+### 示例
 
-Below is an text versioned **example**, original text could be found [here](https://www.apache.org/licenses/software-grant.txt) 
+下边是一个文本示例，原始文本可以在[这里](https://www.apache.org/licenses/software-grant.txt)找到
 
 ```
 License Agreement
@@ -109,3 +109,4 @@ List of software and other intellectual property covered by this agreement:
 * Github address where your code is hosted
 * Pull request link
 ```
+

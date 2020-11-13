@@ -1,21 +1,20 @@
 ---
 type: docs
-title: "How to become a Dubbo committer"
-linkTitle: "How To"
+title: "如何成为 Dubbo Committer"
+linkTitle: "成为 Committer"
 weight: 1
 ---
 
+每个人都可以成为 Apache 项目的贡献者。作为一个贡献者只是意味着你对项目感兴趣并以某种方式做出贡献，从提出合理的问题（这些问题记录了项目并向开发人员提供反馈）到提供新的特性作为补丁。
 
-Anyone can be a contributor to an Apache project. Being a contributor simply means that you take an interest in the project and contribute in some way, ranging from asking sensible questions (which documents the project and provides feedback to developers) through to providing new features as patches.
+如果你成为对一个项目有价值的贡献者，你有可能被邀请成为一个 committer。committer 是 ASF（Apache软件基金会）中用来表示提交特定项目的人的术语。它给你带来对项目仓库和资源写的权限。
 
-If you become a valuable contributor to the project you may well be invited to become a committer. Committer is a term used at the ASF to signify someone who is committed to a particular project. It brings with it the privilege of write access to the project repository and resources. 
+在 Dubbo 社区，如果一个 committer 获得大量的优秀成绩，就可以被邀请加入项目管理委员会（PMC）。
 
-In Dubbo community, if a committers who have earned even more merit, can be invited to be a part of the Project Management Committee (PMC).
+当您不熟悉ASF使用的开源的开发过程时，有时难以理解的一点，就是我们更重视社区而不是代码。一个强大而健康的社区将受到尊重，成为一个有趣和有益的地方。更重要的是，一个多元化和健康的社区可以长时间的持续支持代码，即使个别公司在这个领域来来往往，也是如此。
 
-One thing that is sometimes hard to understand when you are new to the open development process used at the ASF, is that we value the community more than the code. A strong and healthy community will be respectful and be a fun and rewarding place. More importantly, a diverse and healthy community can continue to support the code over the longer term, even as individual companies come and go from the field.
+更多详细信息可以在[这里](https://community.apache.org/contributors/)找到。
 
-More details could be found [here](https://community.apache.org/contributors/).
+### 我可以贡献什么？
 
-### What can I contribute?
-
-Please refer to the [new contributor guide](new-contributor-guide_dev.md).
+请参阅[新的贡献者指南](new-contributor-guide_dev.md)。

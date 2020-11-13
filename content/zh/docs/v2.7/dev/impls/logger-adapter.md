@@ -1,32 +1,31 @@
 ---
 type: docs
-title: "LoggerAdapter Extension"
-linkTitle: "LoggerAdapter"
+title: "日志适配扩展"
+linkTitle: "日志适配扩展"
 weight: 26
 ---
 
+## 扩展说明
 
-## Summary
+日志输出适配扩展点。
 
-Extension for adapting logger output
-
-## Extension Interface
+## 扩展接口
 
 `org.apache.dubbo.common.logger.LoggerAdapter`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
 <dubbo:application logger="xxx" />
 ```
 
-Or:
+或者：
 
 ```sh
 -Ddubbo:application.logger=xxx
 ```
 
-## Existing Extension
+## 已知扩展
 
 * `org.apache.dubbo.common.logger.slf4j.Slf4jLoggerAdapter`
 * `org.apache.dubbo.common.logger.jcl.JclLoggerAdapter`
@@ -34,9 +33,9 @@ Or:
 * `org.apache.dubbo.common.logger.log4j2.Log4j2LoggerAdapter`
 * `org.apache.dubbo.common.logger.jdk.JdkLoggerAdapter`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -44,11 +43,11 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxLoggerAdapter.java (LoggerAdapter implementation)
+                |-XxxLoggerAdapter.java (实现LoggerAdapter接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.common.logger.LoggerAdapter (plain text file with the content: xxx=com.xxx.XxxLoggerAdapter)
+                |-org.apache.dubbo.common.logger.LoggerAdapter (纯文本文件，内容为：xxx=com.xxx.XxxLoggerAdapter)
 ```
 
 XxxLoggerAdapter.java：

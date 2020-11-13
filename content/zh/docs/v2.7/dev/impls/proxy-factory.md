@@ -1,35 +1,34 @@
 ---
 type: docs
-title: "ProxyFactory Extension"
-linkTitle: "ProxyFactory"
+title: "动态代理扩展"
+linkTitle: "动态代理扩展"
 weight: 12
 ---
 
+## 扩展说明
 
-## Summary
+将 `Invoker` 接口转换成业务接口。
 
-Convert `Invoker` into business interface.
-
-## Extension Interface
+## 扩展接口
 
 `org.apache.dubbo.rpc.ProxyFactory`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
 <dubbo:protocol proxy="xxx" />
-<!-- default configuration, it will take effect when proxy attribute is not configured in <dubbo:protocol> -->
+<!-- 缺省值配置，当<dubbo:protocol>没有配置proxy属性时，使用此配置 -->
 <dubbo:provider proxy="xxx" />
 ```
 
-## Existing Extension
+## 已知扩展
 
 * `org.apache.dubbo.rpc.proxy.JdkProxyFactory`
 * `org.apache.dubbo.rpc.proxy.JavassistProxyFactory`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -37,11 +36,11 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxProxyFactory.java (ProxyFactory implementation)
+                |-XxxProxyFactory.java (实现ProxyFactory接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.rpc.ProxyFactory (plain text file with the content: xxx=com.xxx.XxxProxyFactory)
+                |-org.apache.dubbo.rpc.ProxyFactory (纯文本文件，内容为：xxx=com.xxx.XxxProxyFactory)
 ```
 
 XxxProxyFactory.java：

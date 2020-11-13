@@ -1,49 +1,49 @@
 ---
 type: docs
-title: "Registry Extension"
-linkTitle: "Registry"
+title: "注册中心扩展"
+linkTitle: "注册中心扩展"
 weight: 9
 ---
 
-## Summary
+## 扩展说明
 
-Registry extension is used for service registration and discovery.
+负责服务的注册与发现。
 
-## Extension Interface
+## 扩展接口
 
 * `org.apache.dubbo.registry.RegistryFactory`
 * `org.apache.dubbo.registry.Registry`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
-<!-- config registry server -->
+<!-- 定义注册中心 -->
 <dubbo:registry id="xxx1" address="xxx://ip:port" />
-<!-- reference registry server, if registry attribute is not specified, then ApplicationContext will be scanned to find if there's any -->
+<!-- 引用注册中心，如果没有配置registry属性，将在ApplicationContext中自动扫描registry配置 -->
 <dubbo:service registry="xxx1" />
-<!-- default configuration for referencing registry server, it will take effect if there's no registry attribute specified in <dubbo:service> -->
+<!-- 引用注册中心缺省值，当<dubbo:service>没有配置registry属性时，使用此配置 -->
 <dubbo:provider registry="xxx1" />
 ```
 
-## Extension Contract
+## 扩展契约
 
 RegistryFactory.java：
 
 ```java
 public interface RegistryFactory {
     /**
-     * Connect to registry server
+     * 连接注册中心.
      * 
-     * The contract for connecting to registry server: <br>
-     * 1. Will not check connection when check=false is set, otherwise exception will be thrown if connection fails. <br>
-     * 2. Support authorizing against username:password in the URL <br>
-     * 3. Support registry server backup with backup=10.20.153.10 <br>
-     * 4. Support cache on local disk with file=registry.cache <br>
-     * 5. Support timeout setup with timeout=1000 <br>
-     * 6. Support session expiration setup with session=60000 <br>
+     * 连接注册中心需处理契约：<br>
+     * 1. 当设置check=false时表示不检查连接，否则在连接不上时抛出异常。<br>
+     * 2. 支持URL上的username:password权限认证。<br>
+     * 3. 支持backup=10.20.153.10备选注册中心集群地址。<br>
+     * 4. 支持file=registry.cache本地磁盘文件缓存。<br>
+     * 5. 支持timeout=1000请求超时设置。<br>
+     * 6. 支持session=60000会话超时或过期设置。<br>
      * 
-     * @param url registry server address, null is not allowed
-     * @return reference to registry server, never return null
+     * @param url 注册中心地址，不允许为空
+     * @return 注册中心引用，总不返回空
      */
     Registry getRegistry(URL url); 
 }
@@ -54,67 +54,65 @@ RegistryService.java：
 ```java
 public interface RegistryService { // Registry extends RegistryService 
     /**
-     * Register service.
+     * 注册服务.
      * 
-     * Contract for registering service: <br>
-     * 1. Registration failure will be ignored and kept retrying if check=false is set in URL, otherwise exception will be thrown <br>
-     * 2. Persistence is required if dynamic=false is set in URL, otherwise, the registration info will be removed automatically when register quits accidentally <br>
-     * 3. Persistent by category if category=overrides is set in URL, default category is providers. It is possible to notify by category. <br>
-     * 4. Data lost is not tolerant when registry server reboots or network jitter happens. <br> 
-     * 5. It is not allowed to override each other when URLs have same URI part but different parameters <br>
+     * 注册需处理契约：<br>
+     * 1. 当URL设置了check=false时，注册失败后不报错，在后台定时重试，否则抛出异常。<br>
+     * 2. 当URL设置了dynamic=false参数，则需持久存储，否则，当注册者出现断电等情况异常退出时，需自动删除。<br>
+     * 3. 当URL设置了category=overrides时，表示分类存储，缺省类别为providers，可按分类部分通知数据。<br>
+     * 4. 当注册中心重启，网络抖动，不能丢失数据，包括断线自动删除数据。<br>
+     * 5. 允许URI相同但参数不同的URL并存，不能覆盖。<br>
      * 
-     * @param url registration info，null is not allowed, e.g.: dubbo://10.20.153.10/com.alibaba.foo.BarService?version=1.0.0&application=kylin
+     * @param url 注册信息，不允许为空，如：dubbo://10.20.153.10/com.alibaba.foo.BarService?version=1.0.0&application=kylin
      */
     void register(URL url);
  
     /**
-     * Unregister service.
+     * 取消注册服务.
      * 
-     * Contract for unregistering service: <br>
-     * 1. IllegalStateException should be thrown when registration info which's supposed to be persistent (with dynamic=false set) cannot be found, otherwise it should be ignored. <br>
-     * 2. To cancel one service, extract match on its URL will be honored <br>
+     * 取消注册需处理契约：<br>
+     * 1. 如果是dynamic=false的持久存储数据，找不到注册数据，则抛IllegalStateException，否则忽略。<br>
+     * 2. 按全URL匹配取消注册。<br>
      * 
-     * @param url registration info，null is not allowed, e.g.: dubbo://10.20.153.10/com.alibaba.foo.BarService?version=1.0.0&application=kylin
+     * @param url 注册信息，不允许为空，如：dubbo://10.20.153.10/com.alibaba.foo.BarService?version=1.0.0&application=kylin
      */
     void unregister(URL url);
  
     /**
      * 订阅服务.
-     * Subscribe service.
      * 
-     * Contract for subscribing service: <br>
-     * 1. Subscription failure will be ignored and kept retrying if check=false is set in URL <br>
-     * 2. Only the specified category will be notified if category=overrides is set in URL. Categories are seperated with comma, and all categorized data will be subscribed when wildcard "*" is specified. <br>
-     * 3. Allow to query by interface, group, version, classifier, e.g.: interface=com.alibaba.foo.BarService&version=1.0.0<br>
-     * 4. Allow to query with wildcard "*" to subscribe all versions under all categories for all interfaces, e.g.: interface=*&group=*&version=*&classifier=*<br>
-     * 5. Subscription will be automatically recoverred when registry server reboots or network jitter happens. <br>
-     * 6. It is not allowed to override each other when URLs have same URI part but different parameters <br>
-     * 7. Subscription procedure will not return until the first notification happens. <br>
+     * 订阅需处理契约：<br>
+     * 1. 当URL设置了check=false时，订阅失败后不报错，在后台定时重试。<br>
+     * 2. 当URL设置了category=overrides，只通知指定分类的数据，多个分类用逗号分隔，并允许星号通配，表示订阅所有分类数据。<br>
+     * 3. 允许以interface,group,version,classifier作为条件查询，如：interface=com.alibaba.foo.BarService&version=1.0.0<br>
+     * 4. 并且查询条件允许星号通配，订阅所有接口的所有分组的所有版本，或：interface=*&group=*&version=*&classifier=*<br>
+     * 5. 当注册中心重启，网络抖动，需自动恢复订阅请求。<br>
+     * 6. 允许URI相同但参数不同的URL并存，不能覆盖。<br>
+     * 7. 必须阻塞订阅过程，等第一次通知完后再返回。<br>
      * 
-     * @param url URL for subscription, null isn't allowed, e.g.: consumer://10.20.153.10/com.alibaba.foo.BarService?version=1.0.0&application=kylin
-     * @param listener notification listener, null is not allowed
+     * @param url 订阅条件，不允许为空，如：consumer://10.20.153.10/com.alibaba.foo.BarService?version=1.0.0&application=kylin
+     * @param listener 变更事件监听器，不允许为空
      */
     void subscribe(URL url, NotifyListener listener);
  
     /**
-     * Unsubscribe service.
+     * 取消订阅服务.
      * 
-     * Contract for unsubscribing service: <br>
-     * 1. Simply ignore if not subscribe <br>
-     * 2. Unsubscribe with URL exact match <br>
+     * 取消订阅需处理契约：<br>
+     * 1. 如果没有订阅，直接忽略。<br>
+     * 2. 按全URL匹配取消订阅。<br>
      * 
-     * @param url URL for unsubscription, null is not allowed, e.g.: consumer://10.20.153.10/com.alibaba.foo.BarService?version=1.0.0&application=kylin
-     * @param listener notification listener, null is not allowed
+     * @param url 订阅条件，不允许为空，如：consumer://10.20.153.10/com.alibaba.foo.BarService?version=1.0.0&application=kylin
+     * @param listener 变更事件监听器，不允许为空
      */
     void unsubscribe(URL url, NotifyListener listener);
  
     /**
      * 查询注册列表，与订阅的推模式相对应，这里为拉模式，只返回一次结果。
-     * Lookup subscription list. Compared to push mode for subscription, this is pull mode and returns result only once.
      * 
      * @see org.apache.dubbo.registry.NotifyListener#notify(List)
-     * @param url URL for  query, null is not allowed, e.g.: consumer://10.20.153.10/com.alibaba.foo.BarService?version=1.0.0&application=kylin
-     * @return subscription list, could be null, has the same meaning as the parameters in {@link org.apache.dubbo.registry.NotifyListener#notify(List<URL>)}.
+     * @param url 查询条件，不允许为空，如：consumer://10.20.153.10/com.alibaba.foo.BarService?version=1.0.0&application=kylin
+     * @return 已注册信息列表，可能为空，含义同{@link org.apache.dubbo.registry.NotifyListener#notify(List<URL>)}的参数。
      */
     List<URL> lookup(URL url);
  
@@ -126,29 +124,29 @@ NotifyListener.java：
 ```java
 public interface NotifyListener { 
     /**
-     * Fire event when receive service change notification.
+     * 当收到服务变更通知时触发。
      * 
-     * Contract for notify: <br>
-     * 1. Always notify with the whole data instead of partial data from the perspective of service interface and data type. In this way, user needs not compare with the previous result. <br>
-     * 2. First notification for subscription must contain the full set of data for one particular service <br>
-     * 3. It is allowed to separate the different type of data in the upcoming notifications, e.g.: it is legal to only notify one of types among providers, consumers, routes or overrides each time, but pls. note for this particular type, the data must be a full set. <br>
-     * 4. If the data for one particular type is empty, need to notify with a special URL which has empty as its protocol and has category parameter for this particluar type.
-     * 5. Notifier (usually it is monitor center) needs to guarantee the notification sequence by, for say: single thread push, queuing in order,  versioning, etc. <br>
+     * 通知需处理契约：<br>
+     * 1. 总是以服务接口和数据类型为维度全量通知，即不会通知一个服务的同类型的部分数据，用户不需要对比上一次通知结果。<br>
+     * 2. 订阅时的第一次通知，必须是一个服务的所有类型数据的全量通知。<br>
+     * 3. 中途变更时，允许不同类型的数据分开通知，比如：providers, consumers, routes, overrides，允许只通知其中一种类型，但该类型的数据必须是全量的，不是增量的。<br>
+     * 4. 如果一种类型的数据为空，需通知一个empty协议并带category参数的标识性URL数据。<br>
+     * 5. 通知者(即注册中心实现)需保证通知的顺序，比如：单线程推送，队列串行化，带版本对比。<br>
      * 
-     * @param urls subscription list, always not empty, equivalent to the return result of {@link org.apache.dubbo.registry.RegistryService#lookup(URL)}.
+     * @param urls 已注册信息列表，总不为空，含义同{@link org.apache.dubbo.registry.RegistryService#lookup(URL)}的返回值。
      */
     void notify(List<URL> urls);
  
 }
 ```
 
-## Existing Extension
+## 已知扩展
 
 `org.apache.dubbo.registry.support.dubbo.DubboRegistryFactory`
 
-## Extension Guide
+## 扩展示例
 
-Directory structure:
+Maven 项目结构：
 
 ```
 src
@@ -156,12 +154,12 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxRegistryFactoryjava (RegistryFactory implementation)
-                |-XxxRegistry.java (Registry implementation)
+                |-XxxRegistryFactoryjava (实现RegistryFactory接口)
+                |-XxxRegistry.java (实现Registry接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.registry.RegistryFactory (plain text file with the content: xxx=com.xxx.XxxRegistryFactory)
+                |-org.apache.dubbo.registry.RegistryFactory (纯文本文件，内容为：xxx=com.xxx.XxxRegistryFactory)
 ```
 
 XxxRegistryFactory.java：

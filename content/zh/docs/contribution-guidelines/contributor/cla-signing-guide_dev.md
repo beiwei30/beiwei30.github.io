@@ -1,31 +1,30 @@
 ---
 type: docs
-title: "CLA Signing Guide"
-linkTitle: "CLA"
+title: "CLA 签署向导"
+linkTitle: "CLA 签署向导"
 weight: 2
 ---
 
 
-You are required to sign the Apache ICLA under the following condition:
-* You have made lots of contribution to Dubbo before Dubbo get donated to Apache, and you haven't sign the Alibaba-CLA before.
-* You have made lots of contribution to Dubbo, and you are invited to become committer of Dubbo, and you have not signed Alibaba-CLA or Apache ICLA before.
+以下情况，需要您签署 Apache ICLA：
 
-#### Steps
+* 在 Dubbo 被捐赠给 Apache 之前，您已经为 Dubbo 作出了很多贡献，并且您以前没有签署过 Alibaba-CLA。
+* 您已经为 Dubbo 作出了很多贡献，并且您被邀请成为 Dubbo 提交者，且之前没有签署过 Alibaba-CLA 或者 Apache ICLA。
 
-* Download this [pdf](https://www.apache.org/licenses/icla.pdf)
-* Fill in the necessary blanks
-* Print it out
-* Sign the printed file
-* Scan it
-* Send an email to secretary@apache.org and cc private@dubbo.apache.org:
-  * entitled with "ICLA submission"
-  * please also provide the link to your github account in the email body
-  * remember to add you ICLA as attachment.
+### 步骤
 
+* 下载这篇 [pdf 文档](https://www.apache.org/licenses/icla.pdf)
+* 编辑该文档，在必要的空格处填上适当的内容
+* 打印
+* 在打印好的文件上签字
+* 扫描
+* 发送一封邮件到secretary@apache.org，并抄送给private@dubbo.apache.org：
+  * 邮件标题为“ICLA submission”
+  * 请在邮件正文附上您的github账号链接
+  * 请记得将您的ICLA文档放入邮件的附件里
 
-#### Explanation to the fields
+### 空格填写必要说明
 
-* Mailing address: Your company address in English is preferred.
-* preferred apache id(s): if you are invited to become committers, you have to choose one apache id, otherwise you can leave it blank.
-* notify project: Dubbo  (This means Dubbo is the project who notifies you to sign the ICLA)
-
+* Mailing address：首选英文格式的公司地址
+* preferred apache id(s)：如果您被邀请成为一名提交者，那么需要您填写一个apache账号，否则，可以不填
+* notify project：Dubbo（意思就是Dubbo就是通知您签署ICLA的项目）

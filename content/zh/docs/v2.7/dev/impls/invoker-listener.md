@@ -1,30 +1,34 @@
-# InvokerListener Extension
+---
+type: docs
+title: "引用监听扩展"
+linkTitle: "引用监听扩展"
+weight: 3
+---
 
-## Summary
+## 扩展说明
 
-Fire event when there's any service referenced.
+当有服务引用时，触发该事件。
 
-## Extension Interface
+## 扩展接口
 
 `org.apache.dubbo.rpc.InvokerListener`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
 <!-- 引用服务监听 -->
-<!-- service reference listener -->
 <dubbo:reference listener="xxx,yyy" /> 
-<!-- default service reference listener -->
+<!-- 引用服务缺省监听器 -->
 <dubbo:consumer listener="xxx,yyy" /> 
 ```
 
-## Existing Extension
+## 已知扩展
 
 `org.apache.dubbo.rpc.listener.DeprecatedInvokerListener`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -32,11 +36,11 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxInvokerListener.java (InvokerListener implementation)
+                |-XxxInvokerListener.java (实现InvokerListener接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.rpc.InvokerListener (plain text file with the content: xxx=com.xxx.XxxInvokerListener)
+                |-org.apache.dubbo.rpc.InvokerListener (纯文本文件，内容为：xxx=com.xxx.XxxInvokerListener)
 ```
 
 XxxInvokerListener.java：

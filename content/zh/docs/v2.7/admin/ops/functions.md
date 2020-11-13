@@ -1,31 +1,28 @@
 ---
 type: docs
-title: "Dubbo Admin Functions"
-linkTitle: "Functions"
+title: "管理控制台运维"
+linkTitle: "管理控制台运维"
 weight: 1
 ---
 
-## Page search
+## 搜索页面
 
-If you need to manage a Dubbo service, you need to search it first and open it's management page
+当你需要管理 Dubbo 的服务时，首先要搜索到这个服务，然后打开它的管理页面
 
 ![/admin-guide/images/dubbo-search.png](/imgs/admin/dubbo-search.jpg)
 
-## Service provider page
+## 服务提供者页面
 
 ![/admin-guide/images/dubbo-providers.png](/imgs/admin/dubbo-providers.jpg)
 
-## Service consumer page
+## 服务消费者页面
 
 ![/admin-guide/images/dubbo-consumers.png](/imgs/admin/dubbo-consumers.jpg)
 
-
-
-## Add route rule page
+## 添加路由规则页面
 
 ![/admin-guide/images/dubbo-add-route.png](/imgs/admin/dubbo-add-route.jpg)
 
-## Add dynamic configuration page
+## 添加动态配置页面
 
 ![/admin-guide/images/dubbo-add-config.png](/imgs/admin/dubbo-add-config.jpg)
-

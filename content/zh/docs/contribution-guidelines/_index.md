@@ -1,88 +1,94 @@
 
 ---
 type: docs
-title: "Contribution Guideline"
-linkTitle: "Contribution Guideline"
-description: "Guidelines for contributing to Dubbo"
+title: "为 Dubbo 做贡献"
+linkTitle: "贡献指南"
+description: "Dubbo 贡献指南"
 weight: 90
 ---
 
 
-Dubbo is released under the non-restrictive Apache 2.0 license, and follows a very standard Github development process, using Github tracker for issues and merging pull requests into master. If you want to contribute even something trivial please do not hesitate, but follow the guidelines below.
+## 为 Dubbo 做贡献
 
-### Sign the Contributor License Agreement
-Before we accept a non-trivial patch or pull request we will need you to sign the Contributor License Agreement. Signing the contributor’s agreement does not grant anyone commit rights to the main repository, but it does mean that we can accept your contributions, and you will get an author credit if we do. Active contributors might be asked to join the core team, and given the ability to merge pull requests.
+Dubbo 是在非限制性的 Apache 2.0 许可下发布的，遵循标准的 Github 开发流程，使用Github追踪处理问题，并将 pull request 合并到 master 中。如果您想为 Dubbo 做贡献（即便是一些微小的），请不要犹豫，遵循下面的指导方针。
 
-### Contact
+### 签署贡献者许可协议
+在我们接受一个补丁或 pull request 之前，我们需要您签署贡献者许可协议。签署贡献者协议并不授予任何人对代码仓库的提交权限，但是它意味着我们可以接受您的贡献，并且如果我们这样做，您将获得一个作者标注。主动贡献者可能会被邀请加入核心团队，并有权限合并 pull request。
 
-#### Mailing list
+### 联系我们
 
-The mailing list is the recommended way for discussing almost anything that related to Dubbo. Please refer to this [guide](https://github.com/apache/dubbo/wiki/Mailing-list-subscription-guide) for detailed documentation on how to subscribe.
+#### 邮件列表
 
-- [dev@dubbo.apache.org](mailto:dev-subscribe@dubbo.apache.org): the develop mailing list, you can ask question here if you have encountered any problem when using or developing Dubbo.
-- [commits@dubbo.apache.org](mailto:commits-subscribe@dubbo.apache.org): all the commits will be sent to this mailing list. You can subscribe to it if you are interested in Dubbo's development.
-- [notification@dubbo.apache.org](mailto:notification-subscribe@dubbo.apache.org): all the Github [issue](https://github.com/apache/dubbo/issues) updates and [pull request](https://github.com/apache/dubbo/pulls) updates will be sent to this mailing list.
 
-### Reporting issue
+邮件列表是讨论几乎所有与 Dubbo 有关事情的推荐方式。有关如何订阅的详细文档，请参阅[指南](https://github.com/apache/dubbo/wiki/Mailing-list-subscription-guide)。
 
-Please follow the [template](https://github.com/apache/dubbo/issues/new?template=dubbo-issue-report-template.md) for reporting any issues.
+- [dev@dubbo.apache.org](mailto:dev-subscribe@dubbo.apache.org): 开发邮件列表，如果您在使用或开发Dubbo时遇到任何问题，您可以在此提出问题。
+- [commits@dubbo.apache.org](mailto:commits-subscribe@dubbo.apache.org): 所有提交将被发送到这个邮件列表。如果您对Dubbo的发展感兴趣，您可以订阅它。
+- [notification@dubbo.apache.org](mailto:notification-subscribe@dubbo.apache.org): 所有Github  [issue](https://github.com/apache/dubbo/issues)和[pull request](https://github.com/apache/dubbo/pulls)的更新都会被发送到这个邮件列表。
 
-### Code Conventions
-Our code style is almost in line with the standard java conventions (Popular IDE's default setting satisfy this), with the following additional restricts:  
-* If there are more than 120 characters in current line, start a new line.
+### 报告问题
 
-* Make sure all new .java files to have a simple Javadoc class comment with at least a @date tag identifying birth, and preferably at least a paragraph on what the class is for.
+在报告任何问题时请遵循[模版](https://github.com/apache/dubbo/issues/new?template=dubbo-issue-report-template.md)。
 
-* Add the ASF license header comment to all new .java files (copy from existing files in the project)
+### 代码约定
+我们的代码风格几乎和标准 Java 约定一致（流行IDE的默认设置满足这一点），主要有以下附加限制：
 
-* Make sure no @author tag added to the file you contribute since @author tag is not used at Apache, other ways such as cvs will record all your contributions fairly.
+* 如果当前行中有超过 120 个字符，则起一个新的行。
 
-* Add some Javadocs and, if you change the namespace, some XSD doc elements.
+* 确保所有新的 .java 文件都有一个简单的 JavaDoc 类注释，其中至少有一个标识创建日期的标签，最好至少有一个关于该类的解释说明。
 
-* A few unit tests should be added for a new feature or an important bugfix.
+* 将ASF许可注释添加到所有新的 .java 文件（从项目中的现有文件复制）
 
-* If no-one else is using your branch, please rebase it against the current master (or other target branch in the main project).
+* 请确保没有将 @author 标记添加到您所贡献的文件中，因为 Apache 不使用 @author 标记，其他方式（如cvs）将公平地记录所有您的贡献。
 
-* When writing a commit message please follow these conventions, if you are fixing an existing issue please add Fixes #XXX at the end of the commit message (where XXX is the issue number).
+* 为代码添加一些 JavaDoc，如果您更改命名空间，则需要一些 XSD DOC 元素。
 
-### Contribution flow
+* 对于新的特征或重要的修复程序，应该添加单元测试。
 
-This is a rough outline of what a contributor's workflow looks like:
+* 如果没有其他人使用您的分支，请将它与 master（或主项目中的其他目标分支）同步。
 
-* Fork the current repository
-* Create a topic branch from where to base the contribution. This is usually master.
-* Make commits of logical units.
-* Make sure commit messages are in the proper format (see below).
-* Push changes in a topic branch to your forked repository.
-* Follow the checklist in the [pull request template](https://github.com/apache/dubbo/blob/master/PULL_REQUEST_TEMPLATE.md)
-* Before you sending out the pull request, please sync your forked repository with remote repository, this will make your pull request simple and clear. See guide below:
+* 当编写提交消息时，请遵循这些约定，如果您正在修复一个现有问题，请在提交消息的末尾添加 Fixes XXX（其中XXX是问题编号）。
 
-    ```bash
-    git remote add upstream git@github.com:apache/dubbo.git
-    git fetch upstream
-    git rebase upstream/master
-    git checkout -b your_awesome_patch 
-    ... add some work
-    git push origin your_awesome_patch
-    ```
-* Submit a pull request to apache/dubbo and wait for the reply.
+### 贡献流程
 
-Thanks for contributing!
+这是一个贡献者工作流程的大致说明：
 
-### Code style
+* 克隆当前项目
+* 从希望贡献的分支上创新新的分支，通常是 master 分支。
+* 提交您的更改。
+* 确保提交消息的格式正确。
+* 将新分支推送到您克隆的代码库中。
+* 执行检查表 [pull request模版](https://github.com/apache/dubbo/blob/master/PULL_REQUEST_TEMPLATE.md)。
+* 在提交 pull request 请求前, 请将您克隆的代码和远程代码库同步，这样您的 pull request 会简单清晰。具体操作如下：
+```
+git remote add upstream git@github.com:apache/dubbo.git
+git fetch upstream
+git rebase upstream/master
+git checkout -b your_awesome_patch
+... add some work
+git push origin your_awesome_patch
+```
+* 提交 pull request 请求到 apache/dubbo 并等待回复。
 
-We provide a template file [dubbo_codestyle_for_idea.xml](https://github.com/apache/dubbo/tree/master/codestyle/dubbo_codestyle_for_idea.xml) for IntelliJ idea, you can import it to you IDE. 
-If you use Eclipse you can config manually by referencing the same file.
+谢谢您的贡献！
 
-{{% alert title="Notice" color="primary" %}}
-It is very important to set the dubbo_codestyle_for_idea.xml, otherwise you will fail to pass the Travis CI. Steps to set the code style are as below:
+### 代码风格
 
-1. Enter `Editor > Code Style`
-2. To manage a code style scheme, in the Code Style page, select the desired scheme from the drop-down list, and click "manage profiles"
-From the drop-down list, select `Import Scheme`, then select this option `IntelliJ IDEA code style XML` to import scheme
-3. In the Scheme field, type the name of the new scheme and press ⏎ to save the changes.
-{{% /alert %}}
 
+我们提供了 IntelliJ idea 的模版文件[dubbo_codestyle_for_idea.xml](https://github.com/apache/dubbo/tree/master/codestyle/dubbo_codestyle_for_idea.xml)，您可以将它导入到IDE。
+
+如果使用 Eclipse，可以通过参考该文件手动配置。
+
+**注意事项**
+
+使用 dubbo_codestyle_for_idea.xml 为你的 IDEA 设置代码格式是贡献代码前至关重要的一个步骤，否则你将会无法通过 Travis CI 的代码风格校验，下面几个步骤给你演示了如何配置代码格式：
+
+1. 进入菜单页 `Editor > Code Style`
+2. 在 Code Style 页面的 scheme 菜单中点击 manage profiles 选项
+在下拉列表中选择 `Import Scheme`, 接着选择 `IntelliJ IDEA code style XML` 导入 xml 文件
+3. 输入你的格式名称，方便在不同工程之间进行识别，最后别忘了 ⏎ 来保存更改.
+
+设置完成后，IDEA 会帮助你自动 reformat 代码
 
 
 

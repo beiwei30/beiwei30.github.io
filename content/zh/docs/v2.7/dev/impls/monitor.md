@@ -1,33 +1,33 @@
 ---
 type: docs
-title: "Monitor Extension"
-linkTitle: "Monitor"
+title: "监控中心扩展"
+linkTitle: "监控中心扩展"
 weight: 10
 ---
 
-## Summary
+## 扩展说明
 
-Extension to monitor service invocation times and time taken for each service invocation.
+负责服务调用次和调用时间的监控。
 
-## Extension Interface
+## 扩展接口
 
 * `org.apache.dubbo.monitor.MonitorFactory`
 * `org.apache.dubbo.monitor.Monitor`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
-<!-- configure monitor center -->
+<!-- 定义监控中心 -->
 <dubbo:monitor address="xxx://ip:port" />
 ```
 
-## Existing Extension
+## 已知扩展
 
 org.apache.dubbo.monitor.support.dubbo.DubboMonitorFactory
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -35,12 +35,12 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxMonitorFactoryjava (MonitorFactory implementation)
-                |-XxxMonitor.java (Monitor implementation)
+                |-XxxMonitorFactoryjava (实现MonitorFactory接口)
+                |-XxxMonitor.java (实现Monitor接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.monitor.MonitorFactory (plain text file with the format: xxx=com.xxx.XxxMonitorFactory)
+                |-org.apache.dubbo.monitor.MonitorFactory (纯文本文件，内容为：xxx=com.xxx.XxxMonitorFactory)
 ```
 
 XxxMonitorFactory.java：

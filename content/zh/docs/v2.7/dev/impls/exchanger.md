@@ -1,35 +1,35 @@
 ---
 type: docs
-title: "Exchanger Extension"
-linkTitle: "Exchanger"
+title: "信息交换扩展"
+linkTitle: "信息交换扩展"
 weight: 18
 ---
 
-## Summary
+## 扩展说明
 
-Exchange message between request and response on network transport layer.
+基于传输层之上，实现 Request-Response 信息交换语义。
 
-## Extension Interface
+## 扩展接口
 
 * `org.apache.dubbo.remoting.exchange.Exchanger`
 * `org.apache.dubbo.remoting.exchange.ExchangeServer`
 * `org.apache.dubbo.remoting.exchange.ExchangeClient`
 
-## Extension Configuration
+## 扩展配置
 
 ```xml
 <dubbo:protocol exchanger="xxx" />
-<!-- default configuration, will take effect if exchanger attribute is not set in <dubbo:protocol> -->
+<!-- 缺省值设置，当<dubbo:protocol>没有配置exchanger属性时，使用此配置 -->
 <dubbo:provider exchanger="xxx" />
 ```
 
-## Existing Extension
+## 已知扩展
 
 `org.apache.dubbo.remoting.exchange.exchanger.HeaderExchanger`
 
-## Extension Guide
+## 扩展示例
 
-Directory layout:
+Maven 项目结构：
 
 ```
 src
@@ -37,13 +37,13 @@ src
     |-java
         |-com
             |-xxx
-                |-XxxExchanger.java (Exchanger implementation)
-                |-XxxExchangeServer.java (ExchangeServer implementation)
-                |-XxxExchangeClient.java (ExchangeClient implementation)
+                |-XxxExchanger.java (实现Exchanger接口)
+                |-XxxExchangeServer.java (实现ExchangeServer接口)
+                |-XxxExchangeClient.java (实现ExchangeClient接口)
     |-resources
         |-META-INF
             |-dubbo
-                |-org.apache.dubbo.remoting.exchange.Exchanger (plain text file with the content: xxx=com.xxx.XxxExchanger)
+                |-org.apache.dubbo.remoting.exchange.Exchanger (纯文本文件，内容为：xxx=com.xxx.XxxExchanger)
 ```
 
 XxxExchanger.java：
