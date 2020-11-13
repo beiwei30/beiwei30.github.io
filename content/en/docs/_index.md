@@ -8,8 +8,6 @@ menu:
     weight: 20
 ---
 
-{{% pageinfo %}}
 Welcome to the Dubbo documentation site!
-{{% /pageinfo %}}
 
 
