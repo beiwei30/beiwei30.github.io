@@ -139,7 +139,7 @@ If there are multiple configurations having the same tag name, they can be disti
 * For example: dubbo.registry.china.address=10.20.153.10:9090 equivalents to <dubbo:registry id="china" address="10.20.153.10:9090" />
 
 ###### Coverage Strategy
-![undefined](https://cdn.yuque.com/lark/0/2018/png/15841/1527849393591-2c3de248-1b3d-47d3-bd10-8b415e9fcd39.png)
+![undefined](/imgs/user/dubbo-config.jpg)
 
 * When JVM starts, -D parameter has priority, so that users can rewrite the parameters when deploy and start, for example, the protocol port should be changed when start.
 * Then comes to XML, the configurations in dubbo.properties are invalid, if they are configured in XML.

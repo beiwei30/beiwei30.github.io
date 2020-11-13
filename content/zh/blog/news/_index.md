@@ -1,7 +1,7 @@
 
 ---
-title: "Articles About Apache Dubbo"
-linkTitle: "Articles"
+title: "技术分享"
+linkTitle: "技术分享"
 weight: 20
 ---
 

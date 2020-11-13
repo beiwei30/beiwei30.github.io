@@ -1,46 +1,48 @@
 ---
-title: "Tracking with Pinpoint"
-linkTitle: "Tracking with Pinpoint"
+title: "使用Pinpoint做分布式跟踪"
+linkTitle: "使用Pinpoint做分布式跟踪"
 date: 2018-07-12
 description: > 
-    This article introduces how to use Pinpoint to track Dubbo applications and monitor applications' performance.
+    本文介绍了利用Pinpoint对Dubbo分布式应用进行调用链跟踪与性能监控。
 ---
 
-After using Dubbo to serve or integrate applications, assuming that a service backstage log shows an exception and that the service is invoked by multiple applications, it is often difficult to determine which application is called, and what is the cause of the problem, so we need a set of distributed tracking systems to quickly locate the problem. Pinpoint can help us quickly locate problems (of course, there are more than one solution).
+在使用Dubbo进行服务化或者整合应用后，假设某个服务后台日志显示有异常，这个服务又被多个应用调用的情况下，我们通常很难判断是哪个应用调用的，问题的起因是什么，因此我们需要一套分布式跟踪系统来快速定位问题，Pinpoint可以帮助我们快速定位问题（当然，解决方案也不止这一种）。
 
-## What is Pinpoint
+## 什么是Pinpoint
 
-[Pinpoint](https://github.com/naver/pinpoint) is an APM (Application Performance Management) tool for large-scale distributed systems written in Java. Inspired by Dapper, Pinpoint provides a solution to help analyze the overall structure of the system and how components within them are interconnected by tracing transactions across distributed applications.
+> 摘自[Pinpoint学习笔记](https://skyao.gitbooks.io/learning-pinpoint/)
 
-You should definitely check Pinpoint out If you want to
+[Pinpoint](https://github.com/naver/pinpoint)是一个开源的 APM (Application Performance Management/应用性能管理)工具，用于基于java的大规模分布式系统。
+仿照Google Dapper，Pinpoint通过跟踪分布式应用之间的调用来提供解决方案，以帮助分析系统的总体结构和内部模块之间如何相互联系。
 
-understand your application topology at a glance
-monitor your application in Real-Time
-gain code-level visibility to every transaction
-install APM Agents without changing a single line of code
-have minimal impact on the performance (approximately 3% increase in resource usage)
+> 注：对于各个模块之间的通讯英文原文中用的是transaction一词，但是我觉得如果翻译为"事务"容易引起误解，所以替换为"交互"或者"调用"这种比较直白的字眼。
 
-### ServerMap
+在使用上力图简单高效：
 
-Understand the topology of any distributed systems by visualizing how their components are interconnected. Clicking on a node reveals details about the component, such as its current status, and transaction count.
+* 安装agent，不需要修改哪怕一行代码
+* 最小化性能损失
 
-### Realtime Active Thread Chart
+### 服务器地图(ServerMap)
 
-Monitor active threads inside applications in real-time.
+通过可视化分布式系统的模块和他们之间的相互联系来理解系统拓扑。点击某个节点会展示这个模块的详情，比如它当前的状态和请求数量。
 
-### Request/Response Scatter Chart
+### 实时活动线程图表(Realtime Active Thread Chart)
 
-Visualize request count and response patterns over time to identify potential problems. Transactions can be selected for additional detail by dragging over the chart.
+实时监控应用内部的活动线程。
 
-### CallStack
+### 请求/应答分布图表(Request/Response Scatter Chart)
 
-Gain code-level visibility to every transaction in a distributed environment, identifying bottlenecks and points of failure in a single view.
+长期可视化请求数量和应答模式来定位潜在问题。通过在图表上拉拽可以选择请求查看更多的详细信息。
 
-### Inspector
+### 调用栈(CallStack)
 
-View additional details on the application such as CPU usage, Memory/Garbage Collection, TPS, and JVM arguments.
+在分布式环境中为每个调用生成代码级别的可视图，在单个视图中定位瓶颈和失败点。
 
-### Supported Modules (last updated 2018/04/01)
+### 巡查(Inspector)
+
+查看应用上的其他详细信息，比如CPU使用率，内存/垃圾回收，TPS，和JVM参数。
+
+### 支持模块
 
 * JDK 6+
 * Tomcat 6/7/8, Jetty 8/9, JBoss EAP 6, Resin 4, Websphere 6/7/8, Vertx 3.3/3.4/3.5
@@ -54,16 +56,17 @@ View additional details on the application such as CPU usage, Memory/Garbage Col
 * DBCP, DBCP2, HIKARICP
 * gson, Jackson, Json Lib
 * log4j, Logback
+* 自定义模块
 
-## Pinpoint and Dubbo
+## Pinpoint与Dubbo的结合
 
-### Quickstart Pinpoint
+### 启动Pinpoint
 
-[Quick start](http://naver.github.io/pinpoint/quickstart.html)（No neet to start TestApp）
+参考Pinpoint的[Quick start](http://naver.github.io/pinpoint/quickstart.html)搭建环境（不需要启动TestApp）
 
-### Dubbo demo
+### 准备Dubbo示例程序
 
-#### Create API module
+#### 创建API包
 
 pom.xml
 ```xml
@@ -79,7 +82,7 @@ pom.xml
 </project>
 ```
 
-Create API interface：
+新建API接口：
 ```
 package com.example.demoapi;
 
@@ -88,7 +91,7 @@ public interface HelloService {
 }
 ```
 
-#### Dubbo provider
+#### 实现 Dubbo 服务提供方
 
 pom.xml
 ```xml
@@ -165,7 +168,7 @@ pom.xml
 </project>
 ```
 
-1. `HelloService` interface：
+1. 实现 `HelloService` 接口：
 ```java
 package com.example.demoprovider.provider;
 
@@ -189,7 +192,7 @@ public class HelloServiceImpl implements HelloService {
 }
 ```
 
-2. Spring Boot bootstrap：
+2. 编写 Spring Boot 引导程序：
 ```java
 package com.example.demoprovider;
 
@@ -205,7 +208,7 @@ public class DemoProviderApplication {
 }
 ```
 
-3. `application.properties`：
+3. 配置 `application.properties`：
 
 ```properties
 # Spring boot application
@@ -234,7 +237,7 @@ dubbo.registry.id = my-registry
 dubbo.registry.address = N/A
 ```
 
-#### Dubbo consumer
+#### 实现 Dubbo 服务消费方
 
 pom.xml
 ```xml
@@ -314,7 +317,7 @@ pom.xml
 </project>
 ```
 
-1. `@Reference` injection `HelloService`
+1. 通过 `@Reference` 注入 `HelloService`
 ```java
 package com.example.democonsumer.controller;
 
@@ -328,7 +331,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class DemoConsumerController {
     @Reference(version = "${demo.service.version}",
             application = "${dubbo.application.id}",
-            url = "dubbo://<Real IP Address>:12345")
+            url = "dubbo://<注意，这里填写具体IP>:12345")
     private HelloService helloService;
 
     @RequestMapping("/sayHello")
@@ -337,8 +340,9 @@ public class DemoConsumerController {
     }
 }
 ```
+> 直连提供者调用需要填写具体IP地址，如果写localhost也可以，但是会被Pinpoint额外识别为一个未知服务
 
-2. Spring Boot bootstrap:
+2. 编写 Spring Boot 引导程序（Web 应用）：
 ```java
 package com.example.democonsumer;
 
@@ -354,7 +358,7 @@ public class DemoConsumerApplication {
 }
 ```
 
-3. `application.properties`:
+3. 配置 `application.properties`：
 ```properties
 # Spring boot application
 spring.application.name=dubbo-consumer-demo
@@ -375,43 +379,45 @@ dubbo.protocol.name=dubbo
 dubbo.protocol.port=12345
 ```
 
-### Using Pinpoint-agent to start `Dubbo provider` and `Dubbo consumer`
+### 使用Pinpoint-agent启动服务提供方和服务消费方
 
-1. Maven clean package
+#### 启动服务提供方
+
+1. 编译打包
 ```
 mvn clean package
 ```
 
-2. Start provider
+2. 附加参数启动服务提供方
 ```
 java -jar -javaagent:$AGENT_PATH/pinpoint-bootstrap-$VERSION.jar -Dpinpoint.agentId=demo-provider -Dpinpoint.applicationName=DP target/demo-provider-0.0.1-SNAPSHOT.jar
 ```
 
-3. Start consumer
+3. 附加参数启动服务消费方
 ```
 java -jar -javaagent:$AGENT_PATH/pinpoint-bootstrap-$VERSION.jar -Dpinpoint.agentId=demo-consumer -Dpinpoint.applicationName=DC target/demo-comsumer-0.0.1-SNAPSHOT-exec.jar
 ```
 
-4. Access the consumer address to simulate user requests
+4. 访问消费方地址模拟用户请求
 
 `http://localhost:8080/sayHello?name=ABC`
 
-## Using Pinpoint locate problems
+## 使用Pinpoint快速定位问题
 
-### Homepage
+### 首页
 
-![/admin-guide/images/pinpoint-home.png](/imgs/blog/en_pinpoint-home.png)
+![/admin-guide/images/pinpoint-home.png](/imgs/blog/pinpoint-home.png)
 
-> The user request here is double the number of requests for DubboProvider, because the favicon.ico icon request is recorded.
+> 这里的用户请求是请求DubboProvider数量的双倍，原因是记录了favicon.ico图标请求导致的
 
-### Call tree
+### 调用树
 
-![/admin-guide/images/pinpoint-calltree.png](/imgs/blog/en_pinpoint-calltree.png)
+![/admin-guide/images/pinpoint-calltree.png](/imgs/blog/pinpoint-calltree.png)
 
-### Mixed view
+### 深入跟踪
 
-![/admin-guide/images/pinpoint-mixedview.png](/imgs/blog/en_pinpoint-mixedview.png)
+![/admin-guide/images/pinpoint-mixedview.png](/imgs/blog/pinpoint-mixedview.png)
 
-### Other
+### 其他
 
-The example simply simulates the provision and call of Dubbo, and does not carry out the application of other middleware such as database. For detailed use, please refer to the Pinpoint document.
+示例简单的模拟了Dubbo的提供和调用，并没有进行数据库等其他中间件的应用，详细使用请参照Pinpoint文档。

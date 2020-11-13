@@ -1,33 +1,30 @@
 ---
-title: "Generic invoke of Dubbo"
-linkTitle: "Generic invoke"
+title: "Dubbo的泛化调用"
+linkTitle: "Dubbo的泛化调用"
 date: 2018-08-14
 description: > 
-    This article introduces you when and how to use generic invoke of Dubbo.
+    本文介绍了 Dubbo 泛化调用的使用场景及相关示例
 ---
 
-# Generic invoke of Dubbo
 
-The generic invoke could be considered to be used in the following cases:
+以下几种场景可以考虑使用泛化调用：
 
-- Service test platform
-- API service gateway
+- 服务测试平台
+- API 服务网关
 
-The generic invoke is mainly used when the consumer does not have an API interface; 
-instead of depending the interface jar package, the service call is initiated directly through the GenericService interface, and all POJOs in the parameters and return values are represented by a `Map`. 
-Generic invoke does not require attention on the server and can be exposed as normal services.
+泛化调用主要用于消费端没有 API 接口的情况；不需要引入接口 jar 包，而是直接通过 GenericService 接口来发起服务调用，参数及返回值中的所有 POJO 均用 `Map` 表示。泛化调用对于服务端无需关注，按正常服务进行暴露即可。
 
-Next, let's take a look at how the consumer uses generic invoke for service call.
+下面来看看消费端如何使用泛化调用进行服务调用。
 
-## Generic invoke through Spring XML configuration
+## 通过 Spring XML 配置进行泛化调用
 
-Declare `generic="true"` in Spring configuration, such as
+在 Spring 配置申明 `generic="true"`，如：
 
 ```xml
-"userService" interface="com.alibaba.dubbo.samples.generic.api.IUserService" generic="true"/>
+<dubbo:reference id="userService" interface="com.alibaba.dubbo.samples.generic.api.IUserService" generic="true"/>
 ```
 
-Where you need to use it, you can call it by forcing a type cast to GenericService.
+需要使用的地方，通过强制类型转化为 GenericService 进行调用：
 
 ```java
 GenericService userService = (GenericService) context.getBean("userService");
@@ -36,22 +33,18 @@ String name = (String) userService.$invoke("delete", new String[]{int.class.getN
 System.out.println(name);
 ```
 
-Among them,
+其中：
 
-1. The interface GenericService has only one method, named $invoke, which takes three arguments, a method name, an array of method parameter types, and an array of parameter values.
+1. GenericService 这个接口只有一个方法，名为 `$invoke`，它接受三个参数，分别为方法名、方法参数类型数组和参数值数组；
+2. 对于方法参数类型数组
+   1. 如果是基本类型，如 int 或 long，可以使用 `int.class.getName()`获取其类型；
+   2. 如果是基本类型数组，如 int[]，则可以使用 `int[].class.getName()`；
+   3. 如果是 POJO，则直接使用全类名，如 `com.alibaba.dubbo.samples.generic.api.Params`。
 
-2. For arrays of method parameter types
+## 通过 API 编程进行泛化调用
 
-   i.	If it is a basic type, such as int or long, use `int.class.getName()` to get its type;
-   
-   ii. If it is a basic type array, such as int[], use `int[].class.getName()`;
-   
-   iii.	If it is a POJO, use the full class name directly, such as `com.alibaba.dubbo.samples.generic.api.Params`.
-
-## Generic invoke through API programming
-
-```java
-ApplicationConfig application = new ApplicationConfig()ApplicationConfig application = new ApplicationConfig();
+```
+ApplicationConfig application = new ApplicationConfig();
 application.setName("api-generic-consumer");
 
 RegistryConfig registry = new RegistryConfig();
@@ -60,27 +53,27 @@ registry.setAddress("zookeeper://127.0.0.1:2181");
 application.setRegistry(registry);
 
 ReferenceConfig<GenericService> reference = new ReferenceConfig<GenericService>();
-// weak type interface name
+// 弱类型接口名
 reference.setInterface("com.alibaba.dubbo.samples.generic.api.IUserService");
-// declared as a generalized interface
+// 声明为泛化接口
 reference.setGeneric(true);
 
 reference.setApplication(application);
 
-// replace all interface references with com.alibaba.dubbo.rpc.service.GenericService
+// 用com.alibaba.dubbo.rpc.service.GenericService可以替代所有接口引用
 GenericService genericService = reference.get();
 
 String name = (String) genericService.$invoke("delete", new String[]{int.class.getName()}, new Object[]{1});
 System.out.println(name);
 ```
 
-Through the API, you don't need to configure the service in advance like XML. You can dynamically construct ReferenceConfig; the API is more common than XML.
+通过 API 的方式，不需要像 XML 的方式需要提前将服务配置好，可以动态构建 ReferenceConfig；相对 XML 来说，API 的方式更常见。
 
-## The case where parameters or return values are POJOs
+## 参数或返回值是 POJO 的场景
 
-For example, the method signature is `User get(Params params)`, where `User` has two attributes, id and name, and `Params` has one attribute, query.
+比如方法签名是 `User get(Params params);`其中 User 有 id 和 name 两个属性，Params 有 query 一个属性。
 
-The following is the code of the consumer:
+以下是消费端的调用代码：
 
 ```java
 String[] parameterTypes = new String[]{"com.alibaba.dubbo.samples.generic.api.Params"};
@@ -91,20 +84,19 @@ Object user = userService.$invoke("get", parameterTypes, new Object[]{param});
 System.out.println("sample one result: " + user);
 ```
 
-The output of the above code is:
+上述代码的输出结果为：
 
-```
+```shell
 sample one result: {name=charles, id=1, class=com.alibaba.dubbo.samples.generic.api.User}
 ```
 
-Here, the Dubbo framework will automatically convert the return value from POJO to Map.
-It can be seen that the return value `user` is a HashMap, which stores three k/vs, name, id, and class.
+这里，Dubbo 框架会自动将 POJO 的返回值转换成 Map。可以看到，返回值 `user` 是一个 HashMap，里面分别存放了 name、id、class 三个 k/v。
 
-## Generic interface implementation
+#### 泛接口实现
 
-The implementation of the generic interface is mainly used when the server does not have an API interface. All POJOs in the parameters and return values are represented by Map, which is usually used for framework integration. For example, to implement a generic remote service Mock framework, all service requests can be handled by implementing the interface GenericService.
+泛接口实现方式主要用于服务端没有 API 接口的情况，参数及返回值中的所有 POJO 均用 Map 表示，通常用于框架集成，如实现一个通用的远程服务 Mock 框架，可通过实现 GenericService 接口处理所有服务请求。
 
-### Implementation GenericService on the server
+### 服务端实现 GenericService
 
 ```java
 public class GenericServiceImpl implements GenericService {
@@ -121,7 +113,7 @@ public class GenericServiceImpl implements GenericService {
 }
 ```
 
-### Server exposed service
+### 服务端暴露服务
 
 ```java
 ApplicationConfig application = new ApplicationConfig();
@@ -147,9 +139,9 @@ service2.setRef(genericService);
 service2.export();
 ```
 
-Similarly, you can expose the service using XML configuration; in this case, the server does not depend on the two interfaces HiService and HelloService.
+同样，也可以使用 XML 配置的方式暴露服务；此时服务端是没有依赖 HiService 和 HelloService 这两个接口的。
 
-### Service invoke on the consumer
+### 消费端进行服务调用
 
 ```java
 ApplicationConfig application = new ApplicationConfig();
@@ -161,7 +153,7 @@ registry.setAddress("zookeeper://127.0.0.1:2181");
 application.setRegistry(registry);
 
 ReferenceConfig<GenericService> reference = new ReferenceConfig<GenericService>();
-// weak type interface name
+// 弱类型接口名
 reference.setInterface(HiService.class);
 reference.setApplication(application);
 
@@ -169,7 +161,7 @@ HiService hiService = (HiService) reference.get();
 System.out.println(hiService.hi("dubbo"));
 
 ReferenceConfig<GenericService> reference2 = new ReferenceConfig<GenericService>();
-// weak type interface name
+// 弱类型接口名
 reference2.setInterface(HelloService.class);
 reference2.setApplication(application);
 
@@ -177,12 +169,11 @@ HelloService helloService = (HelloService) reference2.get();
 System.out.println(helloService.hello("community"));
 ```
 
-Similarly, the consumer can also reference the service using an XML configuration and then make the call. Here you can see that the calling method is a normal service call, not a generic call. Of course, it is also possible to use generic calls.
+同样，消费端也可以使用 XML 配置的方式引用服务，然后进行调用。这里可以看到调用方式为普通的服务调用，并非泛化调用。当然使用泛化调用也是可以的。
 
-So far, a simple service Mock platform has been successfully launched!
+到这里为止，一个简易的服务 Mock 平台就成功上线了！
 
+## 其他
 
-## Others
-
--	The generic invoke and generic interface implementations introduced in this article are all based on the native Dubbo protocol. Prior to version 2.6.2, other protocols such as http/hessian don't support generic invoke. Version 2.6.3 will support the generic invoke of these two protocols.
--	The relevant sample codes mentioned in this article can be found in dubbo-samples: https://github.com/apache/dubbo-samples/tree/master/java/dubbo-samples-generic
+* 本文介绍的泛化调用和泛接口实现，都是在原生的 `Dubbo` 协议之上的。在 2.6.2 版本之前，其他协议如 http/hessian 等是不支持泛化调用的，2.6.3 版本将会对这两个协议的泛化调用做支持。
+* 本文中提到的相关示例代码可以在 dubbo-samples中找到：https://github.com/apache/dubbo-samples/tree/master/java/dubbo-samples-generic

@@ -1,63 +1,62 @@
 ---
-title: "Dubbo's Load Balance"
-linkTitle: "Dubbo's Load Balance"
+title: "Dubbo的负载均衡"
+linkTitle: "Dubbo的负载均衡"
 date: 2018-08-10
 description: >
-    This article introduces you what is load balance and how load balance strategy is implemented in Dubbo.
+    本文介绍了负载均衡的相关概念以及 Dubbo 中的负载均衡策略实现。
 ---
 
+## 背景
 
-## Background
+Dubbo是一个分布式服务框架，能避免单点故障和支持服务的横向扩容。一个服务通常会部署多个实例。如何从多个服务 Provider 组成的集群中挑选出一个进行调用，就涉及到一个负载均衡的策略。
 
-Dubbo is a distributed service framework that avoids single point of failure and horizontal expansion of support services. A service typically deploys multiple instances. How to select a call from a cluster of multiple service providers involves a load balancing strategy.
+## 几个概念
 
-## Concepts
+在讨论负载均衡之前，我想先解释一下这3个概念。
 
-Before discussing load balancing, I will explain these three concepts first.
+1. 负载均衡
+2. 集群容错
+3. 服务路由
 
-1. Load Balancing
-2. Fault-tolerant Cluster
-3. Service Route
+这3个概念容易混淆。他们都描述了怎么从多个 Provider 中选择一个来进行调用。那他们到底有什么区别呢?下面我来举一个简单的例子，把这几个概念阐述清楚吧。
 
-These three concepts are confusing. They all describe how to choose from multiple Providers to make calls. So what is the difference between them? Let me give a simple example and explain these concepts clearly.
+有一个Dubbo的用户服务，在北京部署了10个，在上海部署了20个。一个杭州的服务消费方发起了一次调用，然后发生了以下的事情:
 
-There is a Dubbo user service, 10 deployed in Beijing and 20 deployed in Shanghai. A service consumer in Hangzhou initiated a call and then the following steps executed:
+1. 根据配置的路由规则，如果杭州发起的调用，会路由到比较近的上海的20个 Provider。
+2. 根据配置的随机负载均衡策略，在20个 Provider 中随机选择了一个来调用，假设随机到了第7个 Provider。
+3. 结果调用第7个 Provider 失败了。
+4. 根据配置的Failover集群容错模式，重试其他服务器。
+5. 重试了第13个 Provider，调用成功。
 
-1. According to the configured routing rule, if the call is initiated by Hangzhou, it will be routed to the nearest 20 Providers in Shanghai.
-2. According to the configured random load balancing strategy, one of the 20 Providers is randomly selected to be called, assuming that the 7th Provider is randomly selected.
-3. As a result, calling the 7th Provider failed.
-4. Retried other servers according to the configured Fault-tolerant Cluster mode.
-5. The call to the 13th Provider was successful.
+上面的第1，2，4步骤就分别对应了路由，负载均衡和集群容错。 Dubbo中，先通过路由，从多个 Provider 中按照路由规则，选出一个子集。再根据负载均衡从子集中选出一个 Provider 进行本次调用。如果调用失败了，根据集群容错策略，进行重试或定时重发或快速失败等。 可以看到Dubbo中的路由，负载均衡和集群容错发生在一次RPC调用的不同阶段。最先是路由，然后是负载均衡，最后是集群容错。 本文档只讨论负载均衡，路由和集群容错在其他的文档中进行说明。
 
-Steps 1, 2, and 4 above correspond to routing, load balancing, and fault-tolerant cluster. In Dubbo, a subset is selected by routing from multiple Providers according to routing rules, then a Provider selected from the subset according to load balancing to make this call. If the call fails, Dubbo retry or schedule retransmission or fail-fast according to the Fault-tolerant Cluster policy. You can see the routes in Dubbo, load balancing and Fault-tolerant Cluster exectute at different stages of an RPC call. The first stage is routing, then load balancing, and finally cluster fault tolerance. This document only discusses load balancing, routing and cluster fault tolerance are described in other documents.
+## Dubbo内置负载均衡策略
 
-## Dubbo's Internal Load Balancing Strategy
+Dubbo内置了4种负载均衡策略:
 
-Dubbo has four Internal Load Balancing Strategies:
+1. RandomLoadBalance:随机负载均衡。随机的选择一个。是Dubbo的**默认**负载均衡策略。
+2. RoundRobinLoadBalance:轮询负载均衡。轮询选择一个。
+3. LeastActiveLoadBalance:最少活跃调用数，相同活跃数的随机。活跃数指调用前后计数差。使慢的 Provider 收到更少请求，因为越慢的 Provider 的调用前后计数差会越大。
+4. ConsistentHashLoadBalance:一致性哈希负载均衡。相同参数的请求总是落在同一台机器上。
 
-1. RandomLoadBalance: Random load balancing. Choose a Provider randomly. It is Dubbo's default load balancing strategy.
-2. Round Robin Load Balancing: Polling load balancing, then chooses one Provider.
-3. LeastActiveLoadBalance: The minimum number of active calls, the random number of the same active number. The active number refers to the difference before and after the call. Make slow providers receive fewer requests, because the slower Provider before and after the difference of calls will be larger.
-4. ConsistentHashLoadBalance: Consistent hash load balancing. Requests with the same parameters always fall on the same machine.
+### 1.随机负载均衡
 
-### 1. Random Load Balancing
+顾名思义，随机负载均衡策略就是从多个 Provider 中随机选择一个。但是 Dubbo 中的随机负载均衡有一个权重的概念，即按照权重设置随机概率。比如说，有10个 Provider，并不是说，每个 Provider 的概率都是一样的，而是要结合这10个 Provider 的权重来分配概率。
 
-As the name implies, the random load balancing strategy is to select one from multiple Providers randomly. However, random load balancing in Dubbo has a weighting concept that sets the random probability according to the weight. For example, there are 10 Providers, it's not to say that the probability of each Provider is the same, but to assign the probability by combining the weights of these 10 providers.
+Dubbo中，可以对 Provider 设置权重。比如机器性能好的，可以设置大一点的权重，性能差的，可以设置小一点的权重。权重会对负载均衡产生影响。可以在Dubbo Admin中对 Provider 进行权重的设置。
 
-In Dubbo, you can set weights on the Provider. For example, if the performance of the machine is better, you can set a larger weight. If the performance is poorer, you can set a smaller weight. Weights have an impact on load balancing. The weight of provider can be set in Dubbo Admin.
+**基于权重的负载均衡算法**
 
-#### Weight-based Load Balancing Algorithm
+随机策略会先判断所有的 Invoker 的权重是不是一样的，如果都是一样的，那么处理就比较简单了。使用random.nexInt(length)就可以随机生成一个 Invoker 的序号,根据序号选择对应的 Invoker 。如果没有在Dubbo Admin中对服务 Provider 设置权重，那么所有的 Invoker 的权重就是一样的，默认是100。 如果权重不一样，那就需要结合权重来设置随机概率了。算法大概如下： 假如有4个 Invoker。
 
-The stochastic strategy will determine whether the weights of all the invokers are the same at first. If they are all the same, then the processing is relatively simple. Using `random.nexInt(length)`, you can randomly generate an invoker serial number, and select the corresponding invoker according to the serial number. If the service provider not set weight in Dubbo Admin, then all the invokers have the same weight, the default is 100. If the weights are different, then you need to combine the weights to set the random probability. The algorithm is probably as follows: If there are 4 invokers
-
-| Invoker | Weight |
+| invoker | weight |
 | ------- | ------ |
 | A       | 10     |
 | B       | 20     |
 | C       | 20     |
 | D       | 30     |
 
-The total weight of A, B, C and D is 10 + 20 + 20 + 30 = 80. Spread 80 numbers in the following diagram:
+A，B，C和D总的权重是10 + 20 + 20 + 30 = 80。将80个数分布在如下的图中:
 
 ```
 +-----------------------------------------------------------------------------------+
@@ -75,11 +74,11 @@ The total weight of A, B, C and D is 10 + 20 + 20 + 30 = 80. Spread 80 numbers i
 -----------------------------------------------------------54
 ```
 
-There are four areas in the above picture, and the lengths are the weights of A, B, C and D, respectively. Use `random.nextInt(10 + 20 + 20 + 30)` to randomly select one of the 80 numbers. Then determine which area the number is distributed in. For example, if random to 37, 37 is distributed in the C region, then select inboker C. 15 is in the B area, 54 is in the D area.
+上面的图中一共有4块区域，长度分别是A，B，C和D的权重。使用random.nextInt(10 + 20 + 20 + 30)，从80个数中随机选择一个。然后再判断该数分布在哪个区域。比如，如果随机到37，37是分布在C区域的，那么就选择 Invoker C。15是在B区域，54是在D区域。
 
-#### Random load balancing Source code
+**随机负载均衡源码**
 
-Below is the source code for random load balancing. For ease of reading and understanding, I removed the extraneous parts.
+下面是随机负载均衡的源码，为了方便阅读和理解，我把无关部分都去掉了。
 
 ```
 public class RandomLoadBalance extends AbstractLoadBalance {
@@ -87,11 +86,11 @@ public class RandomLoadBalance extends AbstractLoadBalance {
     private final Random random = new Random();
 
     protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) {
-        int length = invokers.size();      // total invoker
-        int totalWeight = 0;               // Sum of invokers' weights
+        int length = invokers.size();      // Invoker 总数
+        int totalWeight = 0;               // 所有 Invoker 的权重的和
 
-        // Determine if all the invokers have the same weight
-        // If the weights are the same, it is simple to generate an index directly from Random.
+        // 判断是不是所有的 Invoker 的权重都是一样的
+        // 如果权重都一样，就简单了。直接用Random生成索引就可以了。
         boolean sameWeight = true;
         for (int i = 0; i < length; i++) {
             int weight = getWeight(invokers.get(i), invocation);
@@ -102,7 +101,7 @@ public class RandomLoadBalance extends AbstractLoadBalance {
         }
 
         if (totalWeight > 0 && !sameWeight) {
-            // If not all of the invoker weights are the same, load balancer will randomly choose invoker based on its weight. The greater the weight, the greater the probability of being selected
+            // 如果不是所有的 Invoker 权重都相同，那么基于权重来随机选择。权重越大的，被选中的概率越大
             int offset = random.nextInt(totalWeight);
             for (int i = 0; i < length; i++) {
                 offset -= getWeight(invokers.get(i), invocation);
@@ -111,40 +110,40 @@ public class RandomLoadBalance extends AbstractLoadBalance {
                 }
             }
         }
-        // If all invokers have the same weight
+        // 如果所有 Invoker 权重相同
         return invokers.get(random.nextInt(length));
     }
 }
 ```
 
-### 2. Round Robin Load Balancing
+### 2.轮询负载均衡
 
-Round Robin Load Balancing, is to call all Providers in turn. As with random load balancing strategies, Round Robin Load Balancing policies also has a weighting concept. The Round Robin Load Balancing algorithm allows RPC calls to be allocated exactly as we set. Whether it is a small or large number of calls. However, there are also some shortcomings in the Round Robin Load Balancing algorithm. There is a problem that the slow provider accumulates the request. For example, the second machine is slow, but it is not crashed. When the request is transferred to the second machine, it is stuck. Over time, all The request get stuck on the second machine, causing the entire system to slow down.
-### 3. Minimum Active Call Load Balancing
-Official explanation:
-> The active number refers to the difference between the counts before and after the call. Select the machine with the minimum number of active calls or choose a random one among machines with the same active number, so that the slower machine can receives less requests.
+轮询负载均衡，就是依次的调用所有的 Provider。和随机负载均衡策略一样，轮询负载均衡策略也有权重的概念。 轮询负载均衡算法可以让RPC调用严格按照我们设置的比例来分配。不管是少量的调用还是大量的调用。但是轮询负载均衡算法也有不足的地方，存在慢的 Provider 累积请求的问题，比如：第二台机器很慢，但没挂，当请求调到第二台时就卡在那，久而久之，所有请求都卡在调到第二台上，导致整个系统变慢。
 
-This explanation seems to be ambigious. We know the purpose is to ensure the slower machine receive less requests, but it is not clear how to achieve it. An example is here: each service maintains an active number counter. When A machine starts processing the request, the counter is incremented by 1. At this time, A is still processing. If the processing is completed, the counter is decremented by 1. B machine processes very quickly after receiving the request. Then the active numbers of A and B are 1,0 respectively. When a new request is generated, the B machine is selected for execution (as B has the minimum active number), so that the slower machine A receives fewer requests.
+### 3.最少活跃调用数负载均衡
 
-When processing a new request, Consumer will check the active number of all Providers. If there is only one Invoker with the minimum active number, the Invoker is returned directly.
+官方解释：
+
+> 最少活跃调用数，相同活跃数的随机，活跃数指调用前后计数差，使慢的机器收到更少。
+
+这个解释好像说的不是太明白。目的是让更慢的机器收到更少的请求，但具体怎么实现的还是不太清楚。举个例子：每个服务维护一个活跃数计数器。当A机器开始处理请求，该计数器加1，此时A还未处理完成。若处理完毕则计数器减1。而B机器接受到请求后很快处理完毕。那么A,B的活跃数分别是1，0。当又产生了一个新的请求，则选择B机器去执行(B活跃数最小)，这样使慢的机器A收到少的请求。
+
+处理一个新的请求时，Consumer 会检查所有 Provider 的活跃数，如果具有最小活跃数的 Invoker 只有一个，直接返回该 Invoker：
 
 ```
 if (leastCount == 1) {
-    // if there is only one minimum value then return directly
+    // 如果只有一个最小则直接返回
     return invokers.get(leastIndexs[0]);
 }
 ```
 
-If there are multiple Invokers with the minimum active number, plus the weights are not equal and the total weight is greater than 0, then generate a random weight ranging from 0 to totalWeight. Finally, the Invoker is selected based on the randomly generated weights.
+如果最小活跃数的 Invoker 有多个，且权重不相等同时总权重大于0，这时随机生成一个权重，范围在 (0，totalWeight) 间内。最后根据随机生成的权重，来选择 Invoker。
 
 ```
 if (! sameWeight && totalWeight > 0) {
-    // if the weights are not equal and the toatl weight is greater than 0 then choose randomly according to total weight
-
+    // 如果权重不相同且权重大于0则按总权重数随机
     int offsetWeight = random.nextInt(totalWeight);
-
-    // and determine which segment the random value falls on.
-
+    // 并确定随机值落在哪个片断上
     for (int i = 0; i < leastCount; i++) {
         int leastIndex = leastIndexs[i];
         offsetWeight -= getWeight(invokers.get(leastIndex), invocation);
@@ -154,80 +153,82 @@ if (! sameWeight && totalWeight > 0) {
 }
 ```
 
+### 4.一致性Hash算法
 
-### 4. Consistent Hash Algorithm
+使用一致性 Hash 算法，让相同参数的请求总是发到同一 Provider。 当某一台 Provider 崩溃时，原本发往该 Provider 的请求，基于虚拟节点，平摊到其它 Provider，不会引起剧烈变动。 算法参见：<http://en.wikipedia.org/wiki/Consistent_hashing>。
 
-Use consistent hash algorithm to ensure that requests with same parameters are always sent to the same Provider. When a Provider crashes, requests originally sent to the Provider is spread evenly to other Providers based on the virtual node without causing drastic changes. The algorithm can be seen at: http://en.wikipedia.org/wiki/Consistent_hashing
+缺省只对第一个参数Hash，如果要修改，请配置:
 
-By default, only the first parameter is hashed. Configure if you would like to modify it:
 ```
 <dubbo:parameter key="hash.arguments" value="0,1" />
 ```
 
-By default, 160 virtual nodes are used. Configure if you would like to modify it:
+缺省用160份虚拟节点，如果要修改，请配置:
+
 ```
 <dubbo:parameter key="hash.nodes" value="320" />
 ```
 
-Consistent hash algorithms can be used in conjunction with caching mechanisms. For example, there is a service getUserInfo(String userId). After the hash algorithm is set, the same userId call is sent to the same Provider. This Provider can cache user data in memory, reducing the number of accesses to the database or distributed cache. If this part of the data is allowed to be inconsistent for some time, this approach can be considered. The number of dependencies and accesses to middleware such as databases, caches, etc. and network IO operations is reduced, while the system performance is improved.
+一致性Hash算法可以和缓存机制配合起来使用。比如有一个服务getUserInfo(String userId)。设置了Hash算法后，相同的userId的调用，都会发送到同一个 Provider。这个 Provider 上可以把用户数据在内存中进行缓存，减少访问数据库或分布式缓存的次数。如果业务上允许这部分数据有一段时间的不一致，可以考虑这种做法。减少对数据库，缓存等中间件的依赖和访问次数，同时减少了网络IO操作，提高系统性能。
 
+## 负载均衡配置
 
+如果不指定负载均衡，默认使用随机负载均衡。我们也可以根据自己的需要，显式指定一个负载均衡。 可以在多个地方类来配置负载均衡，比如 Provider 端，Consumer端，服务级别，方法级别等。
 
+### 服务端服务级别
 
-## Load Balancing Configuration
-
-If load balancing is not specified, random load balancing is used by default. Load balancing can also be explicitly specified based on our needs. Load balancing can be configured in multiple local classes, such as Provider Side, Consumer Side, Service Level, and Method Level.
-
-### Server Side Service Level
 ```
 <dubbo:service interface="..." loadbalance="roundrobin" />
 ```
-All methods of the service use roundrobin load balancing.
 
-### Client Side Service Level
+该服务的所有方法都使用roundrobin负载均衡。
+
+### 客户端服务级别
+
 ```
 <dubbo:reference interface="..." loadbalance="roundrobin" />
 ```
-All methods of the service use roundrobin load balancing.
 
-### Server Side Method Level
+该服务的所有方法都使用roundrobin负载均衡。
+
+### 服务端方法级别
+
 ```
 <dubbo:service interface="...">
     <dubbo:method name="hello" loadbalance="roundrobin"/>
 </dubbo:service>
 ```
-Only the hello method of the service uses roundrobin load balancing.
 
-### Client Side Method Level
+只有该服务的hello方法使用roundrobin负载均衡。
+
+### 客户端方法级别
+
 ```
 <dubbo:reference interface="...">
     <dubbo:method name="hello" loadbalance="roundrobin"/>
 </dubbo:reference>
 ```
-Only the hello method of the service uses roundrobin load balancing.
 
-Similar to other Dubbo configurations, multiple configurations are covered:
+只有该服务的hello方法使用roundrobin负载均衡。
 
-1. The method level takes precedence, the interface level is next, and the global configuration comes last.
-2. If the level is the same, the Consumer is given priority and the Provider is next
+和Dubbo其他的配置类似，多个配置是有覆盖关系的：
 
-Therefore, the priority of the above four configurations is:
+1. 方法级优先，接口级次之，全局配置再次之。
+2. 如果级别一样，则消费方优先，提供方次之。
 
-1. Client side method level configuration.
-2. Client side interface level configuration.
-3. Server side method level configuration.
-4. Server side interface level configuration.
+所以，上面4种配置的优先级是:
 
+1. 客户端方法级别配置。
+2. 客户端接口级别配置。
+3. 服务端方法级别配置。
+4. 服务端接口级别配置。
 
+## 扩展负载均衡
 
+Dubbo的4种负载均衡的实现，大多数情况下能满足要求。有时候，因为业务的需要，我们可能需要实现自己的负载均衡策略。本章只说明如何配置负载均衡算法。关于Dubbo扩展机制的更多内容，请前往[Dubbo可扩展机制实战](https://lark.alipay.com/aliware_articles/vtpf9h/pe9pyr)。
 
-## Extended Load Balancing
+1. 实现LoadBalance接口, 以下是Dubbo的LoadBalance接口:
 
-Four load balancing implementations of Dubbo meet the requirements in most cases. Sometimes, we may need to implement our own load balancing strategy because of the needs of the business. This chapter only explains how to configure the load balancing algorithm. For more on the Dubbo extension mechanism, go to the Dubbo extension mechanism practice.
-
-1. Implementing the LoadBalance interface
-
-The following is Dubbo's LoadBalance interface:
 ```
 @SPI(RandomLoadBalance.NAME)
 public interface LoadBalance {
@@ -236,11 +237,12 @@ public interface LoadBalance {
 }
 ```
 
-This is the interface of the SPI. The parameters of the select method are as follows:
+这是SPI的接口，select方法的参数如下:
 
-* invokers: A list of all service Providers.
-* url: Some configuration information, such as interface name, check or not, serialization.
-* invocation: Information called by the RPC, including the method name, method parameter type, and method parameters. Here is a LoadBalance implemented by us. The implementation is very simple - Choose the first Invoker:
+- invokers: 所有的服务 Provider 列表。
+- url: 一些配置信息，比如接口名，是否check，序列化方式。
+- invocation: RPC调用的信息，包括方法名，方法参数类型，方法参数。 下面是我们自己实现的一个LoadBalance，实现很简单，选择第一个 Invoker:
+
 ```
 package com.demo.dubbo;
 public class DemoLoadBalance implements LoadBalance {
@@ -252,21 +254,18 @@ public class DemoLoadBalance implements LoadBalance {
 }
 ```
 
-2. Add a resource file
+2. 添加资源文件 添加文件:`src/main/resource/META-INF/dubbo/com.alibaba.dubbo.rpc.cluster.LoadBalance`。这是一个简单的文本文件。文件内容如下:
 
-Add a file:
-``src/main/resource/META-INF/dubbo/com.alibaba.dubbo.rpc.cluster.LoadBalance``
-This is a simple text file. The file contents are as follows:
 ```
 demo=my=com.demo.dubbo.DemoLoadBalance
 ```
 
-3. Configure to use custom LoadBalance
+3. 配置使用自定义LoadBalance
 
 ```
 <dubbo:reference id="helloService" interface="com.demo.dubbo.api.IHelloService" loadbalance="demo" />
 ```
 
-Configure  ``<loadbalance="demo">`` in ``dubbo:reference`` at the Consumer side.
+在Consumer端的`dubbo:reference`中配置`<loadbalance="demo">`
 
-After 3 steps above, we wrote a custom LoadBalance and told Dubbo to use it. Start Dubbo and we can see that Dubbo has used a custom DemoLoadBalance.
+经过上面的3个步骤，我们编写了一个自定义的LoadBalance，并告诉Dubbo使用它了。启动Dubbo，我们就能看到Dubbo已经使用了自定义的DemoLoadBalance。

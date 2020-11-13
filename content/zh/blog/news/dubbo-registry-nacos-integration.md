@@ -1,20 +1,30 @@
 ---
-title: "Dubbo Integrates with Nacos to Become a Registry"
-linkTitle: "Use Dubbo with Nacos"
+title: "Dubbo 融合 Nacos 成为注册中心"
+linkTitle: "Dubbo 融合 Nacos 成为注册中心"
 date: 2018-11-07
-description: This article introduces how to use Nacos in Dubbo application.
+description: 本文介绍了如何在 Dubbo 中使用 Nacos 作为服务注册中心
 ---
 
-Nacos is an important registry in Dubbo ecosystem, and dubbo-registry-nacos is the implementation of Dubbo-integrated Nacos registry. 
 
-## Preparation Works 
-Before you integrate dubbo-registry-nacos into your Dubbo project, make sure the Nacos service is started in the background. If you are not familiar with the basic use of Nacos, you can refer to the Quick Start for Nacos: https://nacos.io/en-us/docs/quick-start.html. Nacos versions above 0.6.1 are recommended. 
+Nacos 作为 Dubbo 生态系统中重要的注册中心实现，其中 [`dubbo-registry-nacos`](https://github.com/apache/dubbo/tree/master/dubbo-registry/dubbo-registry-nacos) 则是 Dubbo 融合 Nacos 注册中心的实现。
 
-## Get Started Quickly
-The operation steps for Dubbo to integrate Nacos into a registry are simple, the general steps can be divided into "add Maven dependency" and "configure the registry." 
 
-## Increase Maven Dependency 
-First, you need to add the Maven dependency of dubbo-registry-nacos to your project's pom.xml file, and it is strongly recommended that you use Dubbo 2.6.5: 
+
+## 预备工作
+
+当您将 [`dubbo-registry-nacos`](https://github.com/apache/dubbo/tree/master/dubbo-registry/dubbo-registry-nacos) 整合到您的 Dubbo 工程之前，请确保后台已经启动 Nacos 服务。如果您尚且不熟悉 Nacos 的基本使用的话，可先行参考 [Nacos 快速入门](https://nacos.io/en-us/docs/quick-start.html)：https://nacos.io/en-us/docs/quick-start.html。建议使用 Nacos `0.6.1` 以上的版本。
+
+
+
+## 快速上手
+
+Dubbo 融合 Nacos 成为注册中心的操作步骤非常简单，大致步骤可分为“增加 Maven 依赖”以及“配置注册中心“。
+
+
+
+### 增加 Maven 依赖
+
+首先，您需要 `dubbo-registry-nacos` 的 Maven 依赖添加到您的项目中 `pom.xml` 文件中，并且强烈地推荐您使用 Dubbo `2.6.5`：
 
 ```xml
 <dependencies>
@@ -23,28 +33,28 @@ First, you need to add the Maven dependency of dubbo-registry-nacos to your proj
         
     <!-- Dubbo Nacos registry dependency -->
     <dependency>
-        <groupId>org.apache</groupId>
+        <groupId>com.alibaba</groupId>
         <artifactId>dubbo-registry-nacos</artifactId>
         <version>0.0.2</version>
     </dependency>   
     
     <!-- Keep latest Nacos client version -->
     <dependency>
-        <groupId>org.apache.nacos</groupId>
+        <groupId>com.alibaba.nacos</groupId>
         <artifactId>nacos-client</artifactId>
         <version>[0.6.1,)</version>
     </dependency>
     
     <!-- Dubbo dependency -->
     <dependency>
-        <groupId>org.apache</groupId>
+        <groupId>com.alibaba</groupId>
         <artifactId>dubbo</artifactId>
         <version>2.6.5</version>
     </dependency>
     
     <!-- Alibaba Spring Context extension -->
     <dependency>
-        <groupId>org.apache.spring</groupId>
+        <groupId>com.alibaba.spring</groupId>
         <artifactId>spring-context-support</artifactId>
         <version>1.0.2</version>
     </dependency>
@@ -53,16 +63,24 @@ First, you need to add the Maven dependency of dubbo-registry-nacos to your proj
     
 </dependencies>
 ```
-When you add dubbo-registry-nacos to your project, you don't need to programmatically implement the service discovery and registration logic, the actual implementation is provided by the third-party package, and then to configure the Naocs registry. 
-
-## Configure the Registry 
-Assuming your Dubbo application is assembled by the Spring Framework, there are two configuration options: Dubbo Spring externalization configuration and Spring XML configuration files, I strongly recommend the former. 
-
-## Dubbo Spring Externalization Configuration 
-Dubbo Spring externalization configuration is a new feature introduced by Dubbo 2.5.8, which automatically generates and binds Dubbo configuration Bean through the Spring Environment property, simplifying configuration and lowering the threshold for microservice development. 
 
 
-Assume your Dubbo application uses Zookeeper as the registry and its server IP address is 10.20.153.10, the registered address is also stored in the dubbo-config.properties file as a Dubbo externalization configuration attribute, as shown below: 
+
+当项目中添加  `dubbo-registry-nacos` 后，您无需显示地编程实现服务发现和注册逻辑，实际实现由该三方包提供，接下来配置 Naocs 注册中心。
+
+
+
+### 配置注册中心
+
+假设您 Dubbo 应用使用 Spring Framework 装配，将有两种配置方法可选，分别为：[Dubbo Spring 外部化配置](https://mercyblitz.github.io/2018/01/18/Dubbo-%E5%A4%96%E9%83%A8%E5%8C%96%E9%85%8D%E7%BD%AE/)以及 Spring XML 配置文件以及 ，笔者强烈推荐前者。
+
+
+
+### [Dubbo Spring 外部化配置](https://mercyblitz.github.io/2018/01/18/Dubbo-%E5%A4%96%E9%83%A8%E5%8C%96%E9%85%8D%E7%BD%AE/)
+
+Dubbo Spring 外部化配置是由 Dubbo `2.5.8` 引入的新特性，可通过 Spring `Environment` 属性自动地生成并绑定 Dubbo 配置 Bean，实现配置简化，并且降低微服务开发门槛。
+
+假设您 Dubbo 应用的使用 Zookeeper 作为注册中心，并且其服务器 IP 地址为：`10.20.153.10`，同时，该注册地址作为 Dubbo 外部化配置属性存储在 `dubbo-config.properties` 文件，如下所示：
 
 ```properties
 ## application
@@ -73,7 +91,12 @@ dubbo.registry.address = zookeeper://10.20.153.10:2181
 ...
 ```
 
-Assuming your Nacos Server is also running on server 10.20.153.10 and using the default Nacos service port 8848, you can simply adjust the dubbo.registry.address property as follows: 
+
+
+假设您的 Nacos Server 同样运行在服务器 `10.20.153.10` 上，并使用默认 Nacos 服务端口 `8848`，您只需将 `dubbo.registry.address` 属性调整如下：
+
+
+
 ```properties
 ## 其他属性保持不变
 
@@ -82,20 +105,27 @@ dubbo.registry.address = nacos://10.20.153.10:8848
 ...
 ```
 
-Subsequently, restart your Dubbo application, and Dubbo's service delivery and consumption information can be displayed in the Nacos console: 
+
+
+随后，重启您的 Dubbo 应用，Dubbo 的服务提供和消费信息在 Nacos 控制台中可以显示：
 
 ![image-20181213103845976](/imgs/blog/dubbo-registry-nacos-1.png)
 
 
-As shown in the figure, the service name prefixed with providers: is the meta-information for the service provider, and consumers: represents the meta-information of the service consumer. Click "Details" to view service status details: 
+
+如图所示，服务名前缀为 `providers:` 的信息为服务提供者的元信息，`consumers:` 则代表服务消费者的元信息。点击“**详情**”可查看服务状态详情：
 
 ![image-20181213104145998](/imgs/blog/dubbo-registry-nacos-2.png)
 
-If you are using the Spring XML configuration file to assemble the Dubbo registry, refer to the next section. 
 
-## Spring XML Configuration File 
 
-Also, assume your Dubbo application uses Zookeeper as the registry and its server IP address is 10.20.153.10 and assemble the Spring Bean in an XML file, as shown below: 
+如果您正在使用 Spring XML 配置文件装配 Dubbo 注册中心的话，请参考下一节。
+
+
+
+### Spring XML 配置文件
+
+同样，假设您 Dubbo 应用的使用 Zookeeper 作为注册中心，并且其服务器 IP 地址为：`10.20.153.10`，并且装配 Spring Bean 在 XML 文件中，如下所示：
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -104,16 +134,18 @@ Also, assume your Dubbo application uses Zookeeper as the registry and its serve
     xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
     xsi:schemaLocation="http://www.springframework.org/schema/beans        http://www.springframework.org/schema/beans/spring-beans-4.3.xsd        http://dubbo.apache.org/schema/dubbo        http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
  
-    <!-- Provider application information for dependency calculation -->
+    <!-- 提供方应用信息，用于计算依赖关系 -->
     <dubbo:application name="dubbo-provider-xml-demo"  />
  
-    <!-- Using the Zookeeper registry Zookeeper   -->
+    <!-- 使用 Zookeeper 注册中心 -->
     <dubbo:registry address="zookeeper://10.20.153.10:2181" />
  	...
 </beans>
 ```
 
-Similar to the Dubbo Spring externalization configuration, simply adjust the address property configuration: 
+
+
+与 [Dubbo Spring 外部化配置](https://mercyblitz.github.io/2018/01/18/Dubbo-%E5%A4%96%E9%83%A8%E5%8C%96%E9%85%8D%E7%BD%AE/) 配置类似，只需要调整 `address` 属性配置即可：
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -122,35 +154,46 @@ Similar to the Dubbo Spring externalization configuration, simply adjust the add
     xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
     xsi:schemaLocation="http://www.springframework.org/schema/beans        http://www.springframework.org/schema/beans/spring-beans-4.3.xsd        http://dubbo.apache.org/schema/dubbo        http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
  
-    <!-- Provider application information for dependency calculation-->
+    <!-- 提供方应用信息，用于计算依赖关系 -->
     <dubbo:application name="dubbo-provider-xml-demo"  />
  
-    <!-- Using the Nacos registry  -->
+    <!-- 使用 Nacos 注册中心 -->
     <dubbo:registry address="nacos://10.20.153.10:8848" />
  	...
 </beans>
 ```
 
-Once you restart the Dubbo application, you can also see that the registration meta-information for both service providers and consumers is presented in the Nacos console: 
+
+
+重启 Dubbo 应用后，您同样也能发现服务提供方和消费方的注册元信息呈现在 Nacos 控制台中：
 
 ![image-20181213113049185](/imgs/blog/dubbo-registry-nacos-3.png)
 
-Do you absolutely configure or switch Nacos registry super Easy? If you want to get more or unclear, refer to the complete example below. 
 
-## Complete Example 
 
-The metadata in the above image is derived from the Dubbo Spring annotation-driven example and the Dubbo Spring XML configuration-driven example, both of which will be described below, you can choose your preferred programming model. Before we get into the formal discussion, let's look at the preparations for both, as they both rely on Java service interfaces and implementations. Also, ensure that the Nacos service is started in the local (127.0.0.1) environment. 
+您是否绝对配置或切换 Nacos 注册中心超级 Easy 呢？如果您仍旧意犹未尽或者不甚明白的话，可参考以下完整的示例。
 
-### Example Interfaces and Implementations 
 
-First, define the sample interface, as follows: 
+
+## 完整示例
+
+以上图片中的元数据源于 Dubbo Spring 注解驱动示例以及 Dubbo Spring XML 配置驱动示例，下面将分别介绍两者，您可以选择自己偏好的编程模型。在正式讨论之前，先来介绍两者的预备工作，因为它们皆依赖 Java 服务接口和实现。同时，**请确保本地（`127.0.0.1`）环境已启动 Nacos 服务**。
+
+
+
+### 示例接口与实现
+
+
+
+首先定义示例接口，如下所示：
+
 ```java
-package org.apache.dubbo.demo.service;
+package com.alibaba.dubbo.demo.service;
 
 /**
  * DemoService
  *
- * @since 2.7.4
+ * @since 2.6.5
  */
 public interface DemoService {
 
@@ -159,20 +202,22 @@ public interface DemoService {
 }
 ```
 
-Provide implementation classes for the above interfaces: 
+
+
+提供以上接口的实现类：
 
 ```java
-package org.apache.dubbo.demo.service;
+package com.alibaba.dubbo.demo.service;
 
-import org.apache.dubbo.config.annotation.Service;
-import org.apache.dubbo.rpc.RpcContext;
+import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.dubbo.rpc.RpcContext;
 
 import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Default {@link DemoService}
  *
- * @since 2.7.4
+ * @since 2.6.5
  */
 @Service(version = "${demo.service.version}")
 public class DefaultService implements DemoService {
@@ -192,15 +237,21 @@ public class DefaultService implements DemoService {
 }
 ```
 
-Once the interface and implementation are ready, the annotation-driven and XML configuration-driven implementations will be used below. 
 
-## Spring Annotation-driven Example 
 
-Dubbo 2.7.4 reconstructs the Spring annotation-driven programming model.
+接口与实现准备妥当后，下面将采用注解驱动和 XML 配置驱动各自实现。
 
-### Service Provider Annotation-driven Implementation 
 
--  Define property source of Dubbo provider externalization configuration - provider-config.properties 
+
+### Spring 注解驱动示例
+
+ Dubbo `2.5.7` 重构了 Spring 注解驱动的编程模型。
+
+
+
+#### 服务提供方注解驱动实现
+
+- 定义 Dubbo 提供方外部化配置属性源 -  `provider-config.properties`
 
 ```properties
 ## application
@@ -218,13 +269,15 @@ demo.service.version=1.0.0
 demo.service.name = demoService
 ```
 
-- Implement service provider bootstrap - DemoServiceProviderBootstrap
+
+
+- 实现服务提供方引导类 - `DemoServiceProviderBootstrap`
 
 ```java
-package org.apache.dubbo.demo.provider;
+package com.alibaba.dubbo.demo.provider;
 
-import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
-import org.apache.dubbo.demo.service.DemoService;
+import com.alibaba.dubbo.config.spring.context.annotation.EnableDubbo;
+import com.alibaba.dubbo.demo.service.DemoService;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.PropertySource;
@@ -234,7 +287,7 @@ import java.io.IOException;
 /**
  * {@link DemoService} provider demo
  */
-@EnableDubbo(scanBasePackages = "org.apache.dubbo.demo.service")
+@EnableDubbo(scanBasePackages = "com.alibaba.dubbo.demo.service")
 @PropertySource(value = "classpath:/provider-config.properties")
 public class DemoServiceProviderBootstrap {
 
@@ -249,13 +302,15 @@ public class DemoServiceProviderBootstrap {
 
 ```
 
-Wherein, the annotation @EnableDubbo activates the Dubbo annotation-driven and externalization configuration, its scanBasePackages property scans the specified Java package, exposes all service interface implementation classes labeled @Service as Spring Bean, and then exports the Dubbo service. 
+其中注解 `@EnableDubbo` 激活 Dubbo 注解驱动以及外部化配置，其 `scanBasePackages` 属性扫描指定 Java 包，将所有标注 `@Service` 的服务接口实现类暴露为 Spring Bean，随即被导出 Dubbo 服务。
 
-@PropertySource is the standard import property configuration resource annotation introduced by Spring Framework 3.1, which provides externalization configuration for Dubbo. 
+ `@PropertySource` 是 Spring Framework 3.1 引入的标准导入属性配置资源注解，它将为 Dubbo 提供外部化配置。
 
-## Service consumer annotation-driven implementation 
 
-- Define property source of Dubbo consumer externalization configuration - consumer-config.properties 
+
+#### 服务消费方注解驱动实现
+
+- 定义 Dubbo 消费方外部化配置属性源 -  `consumer-config.properties`
 
 ```properties
 ## Dubbo Application info
@@ -268,16 +323,18 @@ dubbo.registry.address = nacos://127.0.0.1:8848
 demo.service.version= 1.0.0
 ```
 
-Similarly, the dubbo.registry.address property points to the Nacos registry, through which metadata about other Dubbo services is obtained. 
+同样地，`dubbo.registry.address` 属性指向 Nacos 注册中心，其他 Dubbo 服务相关的元信息通过 Nacos 注册中心获取。
 
-- Implement service consumer bootstrap class - DemoServiceConsumerBootstrap 
+
+
+- 实现服务消费方引导类 - `DemoServiceConsumerBootstrap`
 
 ```java
-package org.apache.dubbo.demo.consumer;
+package com.alibaba.dubbo.demo.consumer;
 
-import org.apache.dubbo.config.annotation.Reference;
-import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
-import org.apache.dubbo.demo.service.DemoService;
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.dubbo.config.spring.context.annotation.EnableDubbo;
+import com.alibaba.dubbo.demo.service.DemoService;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.PropertySource;
@@ -312,19 +369,23 @@ public class DemoServiceConsumerBootstrap {
 
 ```
 
-Similarly, the @EnableDubbo annotation activates the Dubbo annotation-driven and externalization configuration, although it currently belongs to the service consumer and does not require the Java package name to scan the service implementation labeled @Service. 
 
-@Reference is a dependency injection annotation for Dubbo remote services that requires service provider and consumer contract interface, version, and group information. In the current service consumption example, the service version of DemoService is derived from the property configuration file consumer-config.properties. 
 
-The @PostConstruct code shows that when the DemoServiceConsumerBootstrap Bean is initialized, it executes ten Dubbo remote method invocation. 
+同样地，`@EnableDubbo`  注解激活 Dubbo 注解驱动和外部化配置，不过当前属于服务消费者，无需指定 Java 包名扫描标注 `@Service` 的服务实现。
 
-### Run the Annotation-driven Example 
+`@Reference` 是 Dubbo 远程服务的依赖注入注解，需要服务提供方和消费端约定接口（interface）、版本（version）以及分组（group）信息。在当前服务消费示例中，`DemoService` 的服务版本来源于属性配置文件 `consumer-config.properties`。
 
-Start DemoServiceProviderBootstrap twice locally and the registry will have two health services: 
+`@PostConstruct` 部分代码则说明当 `DemoServiceConsumerBootstrap` Bean 初始化时，执行十次 Dubbo 远程方法调用。
+
+
+
+#### 运行注解驱动示例
+
+在本地启动两次 `DemoServiceProviderBootstrap`，注册中心将出现两个健康服务：
 
 ![image-20181213123909636](/imgs/blog/dubbo-registry-nacos-4.png)
 
-Run DemoServiceConsumerBootstrap again and the results are as follows: 
+再运行 `DemoServiceConsumerBootstrap`，运行结果如下：
 
 ```
 Service [name :demoService , port : 20880] sayName("小马哥（mercyblitz）") : Hello,小马哥（mercyblitz）
@@ -339,15 +400,19 @@ Service [name :demoService , port : 20881] sayName("小马哥（mercyblitz）") 
 Service [name :demoService , port : 20881] sayName("小马哥（mercyblitz）") : Hello,小马哥（mercyblitz）
 ```
 
-Run correctly and the service consumer uses a load balancing strategy to allocate ten RPC calls equally to two Dubbo service provider instances. 
+运行无误，并且服务消费方使用了负载均衡策略，将十次 RPC 调用平均分摊到两个 Dubbo 服务提供方实例中。
 
-### Spring XML Configuration-driven Example 
 
-Spring XML configuration-driven is the programming model of traditional Spring assembly components. 
 
-#### Service Provider XML Configuration-driven 
+### Spring XML 配置驱动示例
 
-Define the service provider XML context configuration file - /META-INF/spring/dubbo-provider-context.xml 
+Spring XML 配置驱动是传统 Spring 装配组件的编程模型。
+
+
+
+#### 服务提供方  XML 配置驱动
+
+- 定义服务提供方 XML 上下文配置文件 - `/META-INF/spring/dubbo-provider-context.xml`
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -356,33 +421,31 @@ Define the service provider XML context configuration file - /META-INF/spring/du
        xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd        http://dubbo.apache.org/schema/dubbo        http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
 
-    <!-- 
-
-Provider application information for dependency calculation
- -->
+    <!-- 提供方应用信息，用于计算依赖关系 -->
     <dubbo:application name="dubbo-provider-xml-demo"/>
 
-    <!-- Using the Nacos registry -->
+    <!-- 使用 Nacos 注册中心 -->
     <dubbo:registry address="nacos://127.0.0.1:8848"/>
 
-    <!-- Using Dubbo protocol to expose services on random ports -->
+    <!-- 用dubbo协议在随机端口暴露服务 -->
     <dubbo:protocol name="dubbo" port="-1"/>
 
-    <!-- Declare the service interface to be exposed -->
-    <dubbo:service interface="org.apache.dubbo.demo.service.DemoService" ref="demoService" version="2.0.0"/>
+    <!-- 声明需要暴露的服务接口 -->
+    <dubbo:service interface="com.alibaba.dubbo.demo.service.DemoService" ref="demoService" version="2.0.0"/>
 
-    <!-- Implement services like local beans -->
-    <bean id="demoService" class="org.apache.dubbo.demo.service.DefaultService"/>
+    <!-- 和本地bean一样实现服务 -->
+    <bean id="demoService" class="com.alibaba.dubbo.demo.service.DefaultService"/>
 </beans>
 ```
 
--  Implement service provider bootstrap class - DemoServiceProviderBootstrap 
 
 
-```java
-package org.apache.dubbo.demo.provider;
+- 实现服务提供方引导类 - `DemoServiceProviderXmlBootstrap`
 
-import org.apache.dubbo.demo.service.DemoService;
+```xml
+package com.alibaba.dubbo.demo.provider;
+
+import com.alibaba.dubbo.demo.service.DemoService;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -403,8 +466,11 @@ public class DemoServiceProviderXmlBootstrap {
 }
 ```
 
-#### Service Consumer XML Configuration-driven 
-Define the consumer provider XML context configuration file - /META-INF/spring/dubbo- consumer-context.xml 
+
+
+#### 服务消费方 XML 配置驱动
+
+- 定义服务消费方 XML 上下文配置文件 - `/META-INF/spring/dubbo-consumer-context.xml`
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -413,28 +479,26 @@ Define the consumer provider XML context configuration file - /META-INF/spring/d
        xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
        xsi:schemaLocation="http://www.springframework.org/schema/beans        http://www.springframework.org/schema/beans/spring-beans-4.3.xsd        http://dubbo.apache.org/schema/dubbo        http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
 
-    <!-- 
-
-Provider application information for dependency calculation
- -->
+    <!-- 提供方应用信息，用于计算依赖关系 -->
     <dubbo:application name="dubbo-consumer-xml-demo"/>
 
-    <!-- Using the Nacos registry-->
+    <!-- 使用 Nacos 注册中心 -->
     <dubbo:registry address="nacos://127.0.0.1:8848"/>
 
-    <!-- Reference service interface -->
-    <dubbo:reference id="demoService" interface="org.apache.dubbo.demo.service.DemoService" version="2.0.0"/>
+    <!-- 引用服务接口 -->
+    <dubbo:reference id="demoService" interface="com.alibaba.dubbo.demo.service.DemoService" version="2.0.0"/>
 
 </beans>
 ```
 
- - Implement service consumer bootstrap class - DemoServiceConsumerBootstrap 
 
+
+- 实现服务消费方引导类 - `DemoServiceConsumerXmlBootstrap`
 
 ```java
-package org.apache.dubbo.demo.consumer;
+package com.alibaba.dubbo.demo.consumer;
 
-import org.apache.dubbo.demo.service.DemoService;
+import com.alibaba.dubbo.demo.service.DemoService;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -459,15 +523,19 @@ public class DemoServiceConsumerXmlBootstrap {
 }
 ```
 
-#### Run XML Configuration-driven Example 
 
-As such, start two DemoServiceProviderXmlBootstrap bootstraps and observe the changes in the Nacos registry service provider: 
+
+#### 运行 XML 配置驱动示例
+
+同样地，先启动两个 `DemoServiceProviderXmlBootstrap` 引导类，观察 Nacos 注册中心服务提供者变化：
 
 ![image-20181213125527201](/imgs/blog/dubbo-registry-nacos-5.png)
 
-The service version driven by the XML configuration is 2.0.0, so the registration service is correct. 
+XML 配置驱动的服务版本为 `2.0.0`，因此注册服务无误。
 
-Run the service consumer bootstrap DemoServiceConsumerXmlBootstrap again and observe the console output: 
+
+
+再运行服务消费者引导类 `DemoServiceConsumerXmlBootstrap`，观察控制台输出内容：
 
 ```
 Service [name :null , port : 20882] sayName("小马哥（mercyblitz）") : Hello,小马哥（mercyblitz）
@@ -482,12 +550,12 @@ Service [name :null , port : 20883] sayName("小马哥（mercyblitz）") : Hello
 Service [name :null , port : 20883] sayName("小马哥（mercyblitz）") : Hello,小马哥（mercyblitz）
 ```
 
+结果同样运行和负载均衡正常，不过由于当前示例尚未添加属性 `demo.service.name` 的缘故，因此，“name”部分信息输出为 `null`。更多内容请参考：https://github.com/apache/dubbo/tree/master/dubbo-registry/dubbo-registry-nacos。
 
-As a result, both operation and load balancing are normal due to the property demo.service.name has not been added to the current example, the "name" information is output as null. For more information, please refer to: https://github.com/apache/dubbo/tree/master/dubbo-registry/dubbo-registry-nacos. 
 
-If you're interested in or fond of open source projects like Dubbo and Nacos, try clicking "star" to support them. The links are as follows: 
 
-- Apache Dubbo: https://github.com/apache/dubbo
-- Dubbo Nacos Registry: https://github.com/apache/dubbo/tree/master/dubbo-registry/dubbo-registry-nacos
-- Alibaba Nacos: https://github.com/alibaba/nacos
+如果您关注或喜爱 Dubbo 以及 Nacos 等开源工程，不妨为它们点 “star”，加油打气链接：
 
+- Apache Dubbo：https://github.com/apache/dubbo
+- Dubbo Nacos Registry：https://github.com/apache/dubbo/tree/master/dubbo-registry/dubbo-registry-nacos
+- Alibaba Nacos：https://github.com/alibaba/nacos

@@ -1,23 +1,25 @@
 ---
-title: "Use Annotations In Dubbo"
-linkTitle: "Use Annotations In Dubbo"
+title: "在 Dubbo 中使用注解"
+linkTitle: "在 Dubbo 中使用注解"
 date: 2018-08-07
 description: >
-    This article will introduce you how to use annotations instead of XML to develop Dubbo applications, such as `@EnableDubbo`, `@Service` and `@Reference`.
+    介绍了如何使用注解方式而非 XML 方式来开发 Dubbo 应用，可以学习到如何使用 @EnableDubbo、@Service、@Reference 的用法。
 ---
 
-With the widely promotion and implementation of Microservices Architecture, the Microservices Architecture represented by Spring Boot and Spring Cloud, in Java ecosystem, introduced some brand new programming model, like:
- - Annotation-Driven
- - External Configuration
- - Auto-Configure
+# 在 Dubbo 中使用注解
 
-New programming model have some advantages, for example, it does not require `XML` configuration, it can simplify deployment process, beyond that，it can promote development efficiency. In order to implement the microservice architecture better，Dubbo has provided more perfect support for the above three scenarios since version 2.5.8. This article focuses on introduce annotations rather than discuss the traditional XML configuration approach. There are two kinds of automatic assembly, external configuration and automatic assembly, will be introduced in another aricle.
+随着微服务架构的广泛地推广和实施。在 Java 生态系统中，以 Spring Boot 和 Spring Cloud 为代表的微服务框架，引入了全新的编程模型，包括：
 
+* 注解驱动（Annotation-Driven）
+* 外部化配置（External Configuration）
+* 以及自动装配（Auto-Configure）
 
-## Introduce Annotations
+新的编程模型无需 XML 配置、简化部署、提升开发效率。为了更好地实践微服务架构，Dubbo 从 `2.5.8` 版本开始， 分别针对了上述的三个场景，提供了更完善的支持。本文不讨论传统的 XML 配置方式，而是侧重介绍注解这种方式。外部配置、自动装配两种自动装配会在另外的文章中专门介绍。
 
+## 注解介绍
 ### @EnableDubbo
-The annotations of `@EnableDubbo` is a combination of both `@EnableDubboConfig` and `@DubboComponentScan`.Related to the annotation driver is  `@DubboComponentScan`.
+
+`@EnableDubbo` 注解是 `@EnableDubboConfig` 和 `@DubboComponentScan`两者组合的便捷表达方式。与注解驱动相关的是 `@DubboComponentScan`。
 
 ```java
 package org.apache.dubbo.config.spring.context.annotation;
@@ -50,11 +52,15 @@ public @interface EnableDubbo {
 }
 ```
 
-The `@bableDubbo` can be used to scan Dubbo's service provider (marked by `@Service`) and Dubbo's service consumer (marked by `Reference`) under the specified package name (via `scanBasePackages`) or in the specified class (via `scanBasePackageClasses`). After Dubbo's service providers and consumers have been scanned,  they have been assembled corresponding and been initialized, and finally the service is exposed or referenced, if you do not use `External Configuration`, you can use `@DubboComponentScan` directly.
+通过 `@EnableDubbo` 可以在指定的包名下（通过 `scanBasePackages`），或者指定的类中（通过 `scanBasePackageClasses`）扫描 Dubbo 的服务提供者（以 `@Service` 标注）以及 Dubbo 的服务消费者（以 `Reference` 标注）。
+
+扫描到 Dubbo 的服务提供方和消费者之后，对其做相应的组装并初始化，并最终完成服务暴露或者引用的工作。
+
+当然，如果不使用外部化配置（External Configuration）的话，也可以直接使用 `@DubboComponentScan`。
 
 ### @Service
 
-`@service` is used to configure Dubbo's Service provider,for example:
+`@Service` 用来配置 Dubbo 的服务提供方，比如：
 
 ```java
 @Service
@@ -65,7 +71,7 @@ public class AnnotatedGreetingService implements GreetingService {
 }
 ```
 
-Via `@Service`'s properties, you can customize Dubbo's Service provider:
+通过 `@Service` 上提供的属性，可以进一步的定制化 Dubbo 的服务提供方：
 
 ```java
 package org.apache.dubbo.config.annotation;
@@ -91,28 +97,29 @@ public @interface Service {
 }
 ```
 
-Which is more important:
-1. **@Service**:        Can only be defined on a class, represent a service
-2. **interfaceClass**: specified `interface`'s class implemented by the service provider
-3. **interfaceName**: specified `interface`'s class name implemented by the service provider
-4. **version**: specified the version number of the service
-5. **group**:specified the group of services
-6. **export**:whether to expose service
-7. **registry**:Whether to register service to the registry
-8. **application**:application configuration
-9. **module**:module configuration
-10. **provider**:service provider configuration
-11. **protocol**:protocol configuration
-12. **monitor**:monitoring center configuration
-13. **registr**:registry configuration
+其中比较重要的有：
 
-In addition, it should be noted that, `application`, `module`, `provider`, `protocol`, `monitor`, `registry` (from 8 to 13) need to provide the name of the corresponding `spring bean`,These bean assembly completed either through traditional XML configuration,or by the modern Java Config. This article will show you how to use `Java Config`.
+1. @Service 只能定义在一个类上，表示一个服务的具体实现
+1. interfaceClass：指定服务提供方实现的 interface 的类
+1. interfaceName：指定服务提供方实现的 interface 的类名
+1. version：指定服务的版本号
+1. group：指定服务的分组
+1. export：是否暴露服务
+1. registry：是否向注册中心注册服务
+1. application：应用配置
+1. module：模块配置
+1. provider：服务提供方配置
+1. protocol：协议配置
+1. monitor：监控中心配置
+2. registry：注册中心配置
+
+另外，需要注意的是，application、module、provider、protocol、monitor、registry（从 8 到 13）需要提供的是对应的 spring bean 的名字，而这些 bean 的组装要么通过传统的 XML 配置方式完成，要么通过现代的 Java Config 来完成。在本文中，将会展示 Java Config 的使用方式。
 
 ### @Reference
 
-`@Reference` is used to configure Dubbo's Service consumer,for example:
+`@Reference` 用来配置 Dubbo 的服务消费方，比如：
 
-```Java
+```java
 @Component
 public class GreetingServiceConsumer {
     @Reference
@@ -124,9 +131,9 @@ public class GreetingServiceConsumer {
 }
 ```
 
-Via `@Reference`'s properties, you can customize Dubbo's Service consumer:
+通过 `@Reference` 上提供的属性，可以进一步的定制化 Dubbo 的服务消费方：
 
-```Java
+```java
 package org.apache.dubbo.config.annotation;
 
 @Documented
@@ -148,41 +155,42 @@ public @interface Reference {
 }
 ```
 
-Which is more important:
+其中比较重要的有：
 
-1. **@Reference**:you can define it on a field in a class, you can define it on a method, you can even modify another annotation, it represent a reference to a service.Normally `@Reference` is defined in one field
-2. **interfaceClass** : specified `interface`'s class implemented by the service provider
-3. **interfaceName**: specified `interface`'s class name implemented by the service provider
-4. **version**: specified the version number of the service
-5. **group**:pecified the group of services
-6. **url**: invoking the registry directly by specifying the URL of the service provider
-7. **application**:application configuration
-8. **module**:module configuration
-9. **consumer**:service consumer configuration
-10. **protocol**:protocol configuration
-11. **monitor**:monitoring center configuration
-12. **registr**:registry configuration
+1. @Reference 可以定义在类中的一个字段上，也可以定义在一个方法上，甚至可以用来修饰另一个 annotation，表示一个服务的引用。通常 @Reference 定义在一个字段上
+2. interfaceClass：指定服务的 interface 的类
+3. interfaceName：指定服务的 interface 的类名
+4. version：指定服务的版本号
+5. group：指定服务的分组
+6. url：通过指定服务提供方的 URL 地址直接绕过注册中心发起调用
+7. application：应用配置
+8. module：模块配置
+9. consumer：服务消费方配置
+10. protocol：协议配置
+11. monitor：监控中心配置
+12. registry：注册中心配置
 
-In addition, it should be noted that, `application`, `module`, `consumer`, `protocol`, `monitor`, `registry` (from 7 to 12) need to provide the name of the corresponding `spring bean`,These bean assembly completed either through traditional XML configuration,or by the modern Java Config. This article will show you how to use `Java Config`.
+另外，需要注意的是，application、module、consumer、protocol、monitor、registry（从 7 到 12）需要提供的是对应的 spring bean 的名字，而这些 bean 的组装要么通过传统的 XML 配置方式完成，要么通过现代的 Java Config 来完成。在本文中，将会展示 Java Config 的使用方式。
 
-## Example practice
+## 示例实战
 
-After learn what `@EnableDubbo`, `@Service`, `@Reference` is, there is a practical example showing how to use the annotation to develop a Dubbo application.The following code can be found at https://github.com/dubbo/dubbo-samples/tree/master/dubbo-samples-annotation
+了解了 `@EnableDubbo`， `@Service`，`@Reference` 的作用，下面以一个实际的例子来展示如何使用 annotation 来开发 Dubbo 应用。以下的代码可以在 https://github.com/dubbo/dubbo-samples/tree/master/dubbo-samples-annotation 中找到。
 
-### 1.Interface Definition
+### 1. 接口定义
 
-Define a simple `GreetingService` interface with only a simple method `sayHello` to the caller.
-```Java
+定义一个简单的 `GreetingService` 接口，里面只有一个简单的方法 `sayHello` 向调用者问好。
+
+```java
 public interface GreetingService {
     String sayHello(String name);
 }
 ```
 
-### 2.Server:Service Implementation
+### 2. 服务端：服务实现
 
-Implement the `GreetingService` interface, and mark it as a service for Dubbo via @Service.
+实现 `GreetingService` 接口，并通过 `@Service` 来标注其为 Dubbo 的一个服务。
 
-```Java
+```java
 @Service
 public class AnnotatedGreetingService implements GreetingService {
     public String sayHello(String name) {
@@ -191,11 +199,11 @@ public class AnnotatedGreetingService implements GreetingService {
 }
 ```
 
-### 3.Server:Assembly Service Provider
+### 3. 服务端：组装服务提供方
 
-You can discover, assemble, and provide Dubbo's services through the Java config technology (@Configuration) and annotation scan (@EnableDubbo) in Spring.
+通过 Spring 中 Java Config 的技术（`@Configuration`）和 annotation 扫描（`@EnableDubbo`）来发现、组装、并向外提供 Dubbo 的服务。
 
-```Java
+```java
 @Configuration
 @EnableDubbo(scanBasePackages = "com.alibaba.dubbo.samples.impl")
 static class ProviderConfiguration {
@@ -232,19 +240,22 @@ static class ProviderConfiguration {
 }
 ```
 
-Description：
- - Scan all classes marked with `@Service` under `com.alibaba.dubbo.samples.impl` with `@EnableDubbo`
- - Via @Configuration, all @Beans in the ProviderConfiguration are assembled using the way of `Java Config` and then injected into the Dubbo service, which means the class marked with `@Service`.Which included:
-i. **ProviderConfig**:Service provider configuration
-ii. **ApplicationConfig**:Application configuration
-iii.**RegistryConfig**:registry configuration
-iv. **ProtocolConfig**:Protocol configuration
-  
- ### 4.Server:Start Service
- 
-In the `main` method to provide external `Dubbo` service by starting a `Spring Context`. 
+说明：
 
-```Java
+* 通过 `@EnableDubbo` 指定在 `com.alibaba.dubbo.samples.impl` 下扫描所有标注有 `@Service` 的类
+* 通过 `@Configuration` 将 ProviderConfiguration 中所有的 `@Bean` 通过 Java Config 的方式组装出来并注入给 Dubbo 服务，也就是标注有 `@Service` 的类。这其中就包括了：
+
+  1. ProviderConfig：服务提供方配置
+  2. ApplicationConfig：应用配置
+  3. RegistryConfig：注册中心配置
+  4. ProtocolConfig：协议配置
+
+
+### 4. 服务端：启动服务 
+
+在 `main` 方法中通过启动一个 Spring Context 来对外提供 Dubbo 服务。
+
+```java
 public class ProviderBootstrap {
     public static void main(String[] args) throws Exception {
         new EmbeddedZooKeeper(2181, false).start(); // #1
@@ -255,24 +266,28 @@ public class ProviderBootstrap {
 }
 ```
 
-Description：
-1. Start an embedded `zookeeper` and provide service registry on port `2181`
-2. Initialize an example of an AnnotationConfigApplicationContext and pass the `ProviderConfiguration` into the example to complete the automatic discovery and assembly of the `Dubbo` service.
-3. Start the `Spring Context` and start providing external `Dubbo` services.
-4. Because it is a server, you need to prevent the process exit by blocking the main thread.
+说明：
 
-Start the `main` method of the server, you will see the following output, on behalf of the server startup success, and registered the `GreetingService` service in the `ZookeeperRegistry`:
+1. 启动一个嵌入式的 zookeeper 在 2181 端口上提供注册中心的服务
+2. 初始化一个 `AnnotationConfigApplicationContext` 的示例，并将 `ProviderConfiguration` 传入以完成 Dubbo 服务的自动发现和装配
+3. 启动 Spring Context，开始提供对外的 Dubbo 服务
+4. 因为是服务端，需要通过阻塞主线程来防止进程退出
+
+
+
+启动服务端的 `main` 方法，将会看到下面的输出，代表服务端启动成功，并在注册中心（ZookeeperRegistry）上注册了 `GreetingService` 这个服务：
+
 ```sh
 [01/08/18 02:12:51:051 CST] main  INFO transport.AbstractServer:  [DUBBO] Start NettyServer bind /0.0.0.0:20880, export /192.168.99.1:20880, dubbo version: 2.6.2, current host: 192.168.99.1
 
 [01/08/18 02:12:51:051 CST] main  INFO zookeeper.ZookeeperRegistry:  [DUBBO] Register: dubbo://192.168.99.1:20880/com.alibaba.dubbo.samples.api.GreetingService?anyhost=true&application=dubbo-annotation-provider&default.timeout=1000&dubbo=2.6.2&generic=false&interface=com.alibaba.dubbo.samples.api
 ```
 
-### 5.Server:Reference Service
+### 5. 客户端：引用服务
 
-Marking the member variable of the `GreetingService` via `@Reference` .The `greetingService` is a reference to the `Dubbo` service, which means that it can simply provide through the interface to the remote party to initiate service calls, and the client does not implement `GreetingService` interface.
+通过 `@Reference` 来标记 `GreetingService` 接口的成员变量 greetingService 是一个 Dubbo 服务的引用，也就是说，可以简单的通过该接口向远端的服务提供方发起调用，而客户端并没有实现 `GreetingService` 接口。
 
-```Java
+```java
 @Component("annotatedConsumer")
 public class GreetingServiceConsumer {
     @Reference
@@ -284,11 +299,11 @@ public class GreetingServiceConsumer {
 }
 ```
 
-### 6.Server:Assembly Service consumer
+### 6. 客户端：组装服务消费者
 
-Just like  **3. Server:Assembly Service Provider** You can discover, assemble, and provide Dubbo's service consumer through the Java config technology (@Configuration) and annotation scan (@EnableDubbo) in Spring.
+与 **3. 服务端：组装服务提供方** 类似，通过 Spring 中 Java Config 的技术（`@Configuration`）和 annotation 扫描（`@EnableDubbo`）来发现、组装 Dubbo 服务的消费者。
 
-```Java
+```java
 @Configuration
 @EnableDubbo(scanBasePackages = "com.alibaba.dubbo.samples.action")
 @ComponentScan(value = {"com.alibaba.dubbo.samples.action"})
@@ -318,18 +333,19 @@ static class ConsumerConfiguration {
 }
 ```
 
-Description：
- - Scan all classes marked with `@Service` under `com.alibaba.dubbo.samples.impl` with `@Reference`
- - Via @Configuration, all @Beans in the ProviderConfiguration are assembled using the way of `Java Config` and then injected into the Dubbo service, which means the class marked with `@Reference`.Which included:
-i. `ApplicationConfig`: Application configuration
-ii. `ConsumerConfig`:Service consumer configuration
-iii.`RegistryConfig`:Registry configuration.Note:The configuration here needs to be consistent with the configuration information of the EmbeddedZooKeeper when started by the service provider.
+说明：
 
-### 7.Server: Initiate Remote Calls
+- 通过 `@EnableDubbo` 指定在 `com.alibaba.dubbo.samples.impl` 下扫描所有标注有 `@Reference 的类
+- 通过 `@Configuration` 将 ConsumerConfiguration 中所有的 `@Bean` 通过 Java Config 的方式组装出来并注入给 Dubbo 服务消费者，也就是标注有 `@Reference 的类。这其中就包括了：
+  1. ApplicationConfig：应用配置
+  2. ConsumerConfig：服务消费者配置
+  3. RegistryConfig：注册中心配置，注意：这里的配置需要与服务提供方启动的 EmbeddedZooKeeper 的配置信息保持一致
 
-In the `main` method, you can start a `Spring Context` to find the service consumer of the assembled `Dubbo` from it, and initiate a remote call.
+### 7. 客户端：发起远程调用
 
-```Java
+在 `main` 方法中通过启动一个 Spring Context，从其中查找到组装好的 Dubbo 的服务消费者，并发起一次远程调用。
+
+```java
 public class ConsumerBootstrap {
     public static void main(String[] args) {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ConsumerConfiguration.class); // #1
@@ -341,13 +357,21 @@ public class ConsumerBootstrap {
 }
 ```
 
-Description：
- - Initialize an example of an AnnotationConfigApplicationContext and pass the `ProviderConfiguration` into the example to complete the automatic discovery and assembly of the `Dubbo` service consumer.
- - start `Spring Context`.
- - Find `bean` which type is `GreetingServiceConsumer` from `Context`.
- - Call the `doSayHello` method and finally initiate a remote call via Dubbo's service reference (marked by @Reference)
- - Print call result
-Start the Server's `main` method, you will see the following output, which returns the `result`:  hello, annotation:
+说明：
+
+1. 初始化一个 `AnnotationConfigApplicationContext` 的示例，并将 `ConsumerConfiguration` 传入以完成 Dubbo 服务消费者的自动发现和装配
+
+2. 启动 Spring Context
+
+3. 从 Context 中查找出类型为 `GreetingServiceConsumer` 的 Bean
+
+4. 调用 `doSayHello` 方法，最终通过 Dubbo 的服务引用（由 `@Reference` 标注）发起一次远程调用
+
+5. 打印调用结果
+
+   
+
+启动客户端的 `main` 方法，将会看到下面的输出，其中返回结果为 result: hello, annotation：
 
 ```sh
 [01/08/18 02:38:40:040 CST] main  INFO config.AbstractConfig:  [DUBBO] Refer dubbo service com.alibaba.dubbo.samples.api.GreetingService from url zookeeper://localhost:2181/com.alibaba.dubbo.registry.RegistryService?anyhost=true&application=dubbo-annotation-consumer&check=false&default.timeout=3000&dubbo=2.6.2&generic=false&interface=com.alibaba.dubbo.samples.api.GreetingService&methods=sayHello&pid=33001&register.ip=192.168.99.1&remote.timestamp=1533105502086&side=consumer&timestamp=1533105519216, dubbo version: 2.6.2, current host: 192.168.99.1
@@ -355,8 +379,10 @@ Start the Server's `main` method, you will see the following output, which retur
 result: hello, annotation
 ```
 
-## Conclusion
 
-By studying this article, the reader can master the basic concepts of `Dubbo`'s exclusive `annotations` , `@EnableDubbo`, `@Service`, `@Reference`, and master it's basic usage through a simple `Dubbo` application.
 
-In addition to traditional `XML` configuration, `Spring` offers more modern configurations such as annotation drivers, externalization, and auto-assembly.This article focuses on the development of `Dubbo` applications through annotations. You can be seen that annotation mode programming is more concise and simple than XML configuration. In future, we will introduce the use of externalization configuration and automatic assembly in `Dubbo`  further.
+## 总结
+
+通过本文的学习，读者可以掌握 Dubbo 专属的 annotation `@EnableDubbo`、`@Service`、`@Reference` 的基本概念，并通过一个简单 Dubbo 应用的实战开发掌握其基本的用法。
+
+Spring 除了传统的 XML 配置之外，还提供了注解驱动、外部化配置、以及自动装配等更现代的配置方式。本文专注在介绍通过注解方式来开发 Dubbo 应用，可以看到，与 XML 配置相比，注解方式编程更加简洁明快。在今后的博文中，会进一步的介绍在 Dubbo 中使用外部化配置、以及自动装配的方法。
