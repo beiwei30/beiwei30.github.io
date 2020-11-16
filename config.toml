@@ -82,7 +82,7 @@ guessSyntax = "true"
 # Everything below this are Site Params
 
 [params]
-copyright = "The Apache Software Foundation."
+copyright = "The Apache Software Foundation. Apache and the Apache feather logo are trademarks of The Apache Software Foundation."
 #privacy_policy = "https://policies.google.com/privacy"
 
 # Google Custom Search Engine ID. Remove or comment out to disable search.
