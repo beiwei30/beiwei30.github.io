@@ -40,7 +40,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: asf-site
           publish_dir: ./public
-          keepFiles: true
+          keep_files: true
 
 
 
