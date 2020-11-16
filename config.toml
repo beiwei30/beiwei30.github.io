@@ -55,14 +55,14 @@ defaultContentLanguageInSubdir = false
 # Language configuration
 [languages]
 [languages.en]
-title = ""
+title = "Apache Dubbo"
 description = "Apache Dubbo Official Website"
 languageName = "English"
 # Weight used for sorting.
 weight = 1
 
 [languages.zh]
-title = ""
+title = "Apache Dubbo"
 description = "Apache Dubbo 官方网站"
 languageName = "中文"
 contentDir = "content/zh"
