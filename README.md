@@ -49,5 +49,5 @@ hugo server --disableFastRender
 ## Update docs
 1. Create new branch
 1. Commit and push changes to content
-1. Submit pull request to `asf-site`
+1. Submit pull request to **master** branch
 1. Staging site will automatically get created and linked to PR to review and test
