@@ -1,58 +1,53 @@
-# Docsy Example
+# Dubbo Official Website
 
-[Docsy](https://github.com/google/docsy) is a Hugo theme for technical documentation sites, providing easy site navigation, structure, and more. This **Docsy Example Project** uses the Docsy theme, as well as providing a skeleton documentation structure for you to use. You can either copy this project and edit it with your own content, or use the theme in your projects like any other [Hugo theme](https://gohugo.io/themes/installing-and-using-themes/).
+[![CI Status](https://github.com/apache/dubbo-website/workflows/CI/badge.svg?branch=master)](https://github.com/apache/dubbo-website/actions)
+![Site Deployment](https://github.com/apache/dubbo-website/workflows/Website%20deploy/badge.svg)
 
-This Docsy Example Project is hosted at [https://example.docsy.dev/](https://example.docsy.dev/).
+This project keeps all sources used for building up Dubbo official website which's served at https://dubbo.apache.org.
 
-You can find detailed theme instructions in the Docsy user guide: https://docsy.dev/docs/
+## Overview
 
-This is not an officially supported Google product. This project is currently maintained.
+The Apache Dubbo docs are built using [Hugo](https://gohugo.io/) with the [Docsy](https://docsy.dev) theme.
+This project contains the hugo project, markdown files, and theme configurations.
 
-## Cloning the Docsy Example Project
+## Pre-requisites
 
-The following will give you a project that is set up and ready to use (don't forget to use `--recurse-submodules` or you won't pull down some of the code you need to generate a working site). The `hugo server` command builds and serves the site. If you just want to build the site, run `hugo` instead.
+- [Hugo extended version](https://gohugo.io/getting-started/installing)
+- [Node.js](https://nodejs.org/en/)
 
-```bash
-git clone --recurse-submodules --depth 1 https://github.com/google/docsy-example.git
-cd docsy-example
-hugo server
+## Environment setup
+
+1. Ensure pre-requisites are installed
+2. Clone this repository
+```sh
+git clone https://github.com/apache/dubbo-website.git
 ```
-
-The theme is included as a Git submodule:
-
-```bash
-▶ git submodule
- a053131a4ebf6a59e4e8834a42368e248d98c01d themes/docsy (heads/master)
+3. Change to root directory: 
+```sh
+cd dubbo-website
 ```
-
-If you want to do SCSS edits and want to publish these, you need to install `PostCSS` (not needed for `hugo server`):
-
-```bash
+4. Add Docsy submodule: 
+```sh
+git submodule add https://github.com/google/docsy.git themes/docsy
+```
+5. Update submodules: 
+```sh
+git submodule update --init --recursive
+```
+6. Install npm packages: 
+```sh
 npm install
 ```
 
-<!--### Cloning the Example from the Theme Project
-
-
-```bash
-git clone --recurse-submodules --depth 1 https://github.com/docsy.git
-cd tech-doc-hugo-theme/exampleSite
-HUGO_THEMESDIR="../.." hugo server
+## Run local server
+1. Run 
+```sh
+hugo server --disableFastRender
 ```
+2. Navigate to `http://localhost:1313`
 
-
-Note that the Hugo Theme Site requires the `exampleSite` to live in a subfolder of the theme itself. To avoid recursive duplication, the example site is added as a Git subtree:
-
-```bash
-git subtree add --prefix exampleSite https://github.com/google/docsy.git  master --squash
-```
-
-To pull in changes, see `pull-deps.sh` script in the theme.-->
-
-## Running the website locally
-
-Once you've cloned the site repo, from the repo root folder, run:
-
-```
-hugo server
-```
+## Update docs
+1. Create new branch
+1. Commit and push changes to content
+1. Submit pull request to `asf-site`
+1. Staging site will automatically get created and linked to PR to review and test
